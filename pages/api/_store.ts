@@ -8,6 +8,45 @@ export interface Product {
   createdAt: string;
 }
 
+const NAMES = [
+  "Teclado Mecânico",
+  "Monitor Ultrawide",
+  "Headset RGB",
+  "Mouse Gamer",
+  "Webcam 4K",
+  "SSD NVMe",
+  "Hub USB-C",
+  "Cadeira Ergonômica",
+  "Microfone Condensador",
+  "Placa de Vídeo",
+];
+
+const DESCRIPTIONS = [
+  "Edição limitada com acabamento premium.",
+  "Alta performance para uso diário.",
+  "Design compacto e portátil.",
+  "Com garantia de 2 anos.",
+  "",
+];
+
+function pick<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/** Gera os dados de um produto aleatório dado um id. */
+export function makeRandomProduct(id: number): Product {
+  const suffix = Math.floor(Math.random() * 900 + 100);
+  return {
+    id,
+    name: `${pick(NAMES)} #${suffix}`,
+    description: pick(DESCRIPTIONS),
+    price: Math.round((Math.random() * 499 + 1) * 100) / 100,
+    quantity: Math.floor(Math.random() * 100),
+    active: Math.random() > 0.2,
+    createdAt: new Date().toISOString(),
+  };
+}
+
 // In-memory store shared across API routes (persists during dev server lifetime)
 declare global {
   // eslint-disable-next-line no-var
@@ -16,26 +55,7 @@ declare global {
 
 if (!global.__store) {
   global.__store = {
-    products: [
-      {
-        id: 1,
-        name: "Produto A",
-        description: "Primeiro produto de exemplo",
-        price: 9.99,
-        quantity: 10,
-        active: true,
-        createdAt: "2026-01-15T09:00:00.000Z",
-      },
-      {
-        id: 2,
-        name: "Produto B",
-        description: "Segundo produto de exemplo",
-        price: 24.5,
-        quantity: 3,
-        active: false,
-        createdAt: "2026-03-22T14:30:00.000Z",
-      },
-    ],
+    products: [makeRandomProduct(1), makeRandomProduct(2)],
     nextId: 3,
   };
 }

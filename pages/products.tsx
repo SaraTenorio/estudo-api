@@ -33,6 +33,8 @@ export default function ProductsPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
+  const [adding, setAdding] = useState(false);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -59,10 +61,29 @@ export default function ProductsPage() {
     try {
       await fetch("/api/products/reset", { method: "POST" });
       await fetchProducts();
+      setToastMsg("Store resetado com sucesso ✓");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2500);
     } finally {
       setResetting(false);
+    }
+  };
+
+  const handleAddRandom = async () => {
+    setAdding(true);
+    try {
+      const res = await fetch("/api/products/random", { method: "POST" });
+      if (!res.ok) {
+        const { error } = await res.json();
+        throw new Error(error);
+      }
+      const created: Product = await res.json();
+      await fetchProducts();
+      setToastMsg(`"${created.name}" adicionado ✓`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2500);
+    } finally {
+      setAdding(false);
     }
   };
 
@@ -95,6 +116,13 @@ export default function ProductsPage() {
               title="Atualizar dados"
             >
               {refreshing ? "↻" : "↻"}
+            </button>
+            <button
+              className={styles.addRandomBtn}
+              onClick={handleAddRandom}
+              disabled={adding || loading}
+            >
+              {adding ? "Adicionando…" : "+ Produto aleatório"}
             </button>
             <button
               className={styles.resetBtn}
@@ -157,9 +185,7 @@ export default function ProductsPage() {
         </main>
       </div>
 
-      {showToast && (
-        <div className={styles.toast}>Store resetado com sucesso ✓</div>
-      )}
+      {showToast && <div className={styles.toast}>{toastMsg}</div>}
     </>
   );
 }

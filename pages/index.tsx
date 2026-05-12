@@ -84,6 +84,30 @@ const endpointGroups = [
       },
     ],
   },
+  {
+    title: "Produto aleatório",
+    resource: "/api/products/random",
+    endpoints: [
+      {
+        method: "POST",
+        description:
+          "Cria um produto com dados aleatórios — sem body necessário",
+        body: null,
+      },
+    ],
+  },
+  {
+    title: "Reset",
+    resource: "/api/products/reset",
+    endpoints: [
+      {
+        method: "POST",
+        description:
+          "Restaura o store com 2 produtos aleatórios — sem body necessário",
+        body: null,
+      },
+    ],
+  },
 ];
 
 const methodColor: Record<string, string> = {

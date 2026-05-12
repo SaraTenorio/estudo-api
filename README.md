@@ -39,11 +39,12 @@ pages/
   index.tsx              ← Página de documentação da API
   products.tsx           ← Página de visualização em cards
   api/
-    _store.ts            ← Store em memória partilhado entre rotas
+    _store.ts            ← Store em memória + makeRandomProduct (partilhado)
     hello.ts             ← Rota de exemplo do Next.js
     products/
-      index.ts           ← GET /api/products · POST
-      [id].ts            ← GET /api/products/:id · PUT · PATCH · DELETE
+      index.ts           ← GET /api/products · POST /api/products
+      [id].ts            ← GET · PUT · PATCH · DELETE /api/products/:id
+      random.ts          ← POST /api/products/random
       reset.ts           ← POST /api/products/reset
 ```
 
@@ -81,11 +82,17 @@ pages/
 | `PATCH`  | Atualiza campos parcialmente |
 | `DELETE` | Remove o produto             |
 
+### Produto aleatório — `/api/products/random`
+
+| Método | Descrição                                       |
+| ------ | ----------------------------------------------- |
+| `POST` | Cria um produto com dados aleatórios (sem body) |
+
 ### Reset — `/api/products/reset`
 
-| Método | Descrição                          |
-| ------ | ---------------------------------- |
-| `POST` | Restaura o store ao estado inicial |
+| Método | Descrição                                             |
+| ------ | ----------------------------------------------------- |
+| `POST` | Restaura o store com 2 produtos aleatórios (sem body) |
 
 ---
 
@@ -142,28 +149,7 @@ pages/
 
 ## Dados iniciais
 
-O store arranca com 2 produtos pré-carregados:
-
-```json
-[
-  {
-    "id": 1,
-    "name": "Produto A",
-    "price": 9.99,
-    "quantity": 10,
-    "active": true,
-    "createdAt": "2026-01-15T09:00:00.000Z"
-  },
-  {
-    "id": 2,
-    "name": "Produto B",
-    "price": 24.5,
-    "quantity": 3,
-    "active": false,
-    "createdAt": "2026-03-22T14:30:00.000Z"
-  }
-]
-```
+O store arranca com **2 produtos aleatórios** gerados automaticamente (nomes, preços e quantidades variam a cada arranque do servidor). O endpoint de reset também regenera esses 2 produtos com dados aleatórios novos.
 
 ---
 
