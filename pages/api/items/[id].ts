@@ -4,15 +4,13 @@ import type { Item } from "../_store";
 
 type ErrorResponse = { error: string };
 
-const ALLOWED_METHODS = "GET, PUT, PATCH, DELETE, HEAD, OPTIONS";
+const ALLOWED_METHODS = "GET, PUT, PATCH, DELETE";
 
 /**
- * GET     /api/items/:id  → retorna um item pelo id
- * PUT     /api/items/:id  → substitui o item completo
- * PATCH   /api/items/:id  → atualiza campos parcialmente
- * DELETE  /api/items/:id  → remove o item
- * HEAD    /api/items/:id  → verifica se o item existe (sem body)
- * OPTIONS /api/items/:id  → retorna os métodos suportados
+ * GET    /api/items/:id  → retorna um item pelo id
+ * PUT    /api/items/:id  → substitui o item completo
+ * PATCH  /api/items/:id  → atualiza campos parcialmente
+ * DELETE /api/items/:id  → remove o item
  */
 export default function handler(
   req: NextApiRequest,
@@ -24,20 +22,10 @@ export default function handler(
     return res.status(400).json({ error: "ID inválido" });
   }
 
-  if (req.method === "OPTIONS") {
-    res.setHeader("Allow", ALLOWED_METHODS);
-    return res.status(204).end();
-  }
-
   const index = store.items.findIndex((item) => item.id === id);
 
   if (index === -1) {
-    if (req.method === "HEAD") return res.status(404).end();
     return res.status(404).json({ error: `Item com id ${id} não encontrado` });
-  }
-
-  if (req.method === "HEAD") {
-    return res.status(200).end();
   }
 
   if (req.method === "GET") {

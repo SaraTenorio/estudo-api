@@ -41,8 +41,8 @@ pages/
     _store.ts            ← Store em memória partilhado entre rotas
     hello.ts             ← Rota de exemplo do Next.js
     items/
-      index.ts           ← GET /api/items · POST · HEAD · OPTIONS
-      [id].ts            ← GET /api/items/:id · PUT · PATCH · DELETE · HEAD · OPTIONS
+      index.ts           ← GET /api/items · POST
+      [id].ts            ← GET /api/items/:id · PUT · PATCH · DELETE
 ```
 
 ---
@@ -65,23 +65,19 @@ pages/
 
 ### Coleção — `/api/items`
 
-| Método    | Descrição                                          |
-| --------- | -------------------------------------------------- |
-| `GET`     | Lista todos os items                               |
-| `POST`    | Cria um novo item                                  |
-| `HEAD`    | Devolve o header `X-Total-Count` com o total       |
-| `OPTIONS` | Devolve o header `Allow` com os métodos suportados |
+| Método | Descrição            |
+| ------ | -------------------- |
+| `GET`  | Lista todos os items |
+| `POST` | Cria um novo item    |
 
 ### Item individual — `/api/items/:id`
 
-| Método    | Descrição                                          |
-| --------- | -------------------------------------------------- |
-| `GET`     | Retorna um item pelo ID                            |
-| `PUT`     | Substitui o item completo                          |
-| `PATCH`   | Atualiza campos parcialmente                       |
-| `DELETE`  | Remove o item                                      |
-| `HEAD`    | Verifica se o item existe (200 / 404 sem body)     |
-| `OPTIONS` | Devolve o header `Allow` com os métodos suportados |
+| Método   | Descrição                    |
+| -------- | ---------------------------- |
+| `GET`    | Retorna um item pelo ID      |
+| `PUT`    | Substitui o item completo    |
+| `PATCH`  | Atualiza campos parcialmente |
+| `DELETE` | Remove o item                |
 
 ---
 

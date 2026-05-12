@@ -4,28 +4,16 @@ import type { Item } from "../_store";
 
 type ErrorResponse = { error: string };
 
-const ALLOWED_METHODS = "GET, POST, HEAD, OPTIONS";
+const ALLOWED_METHODS = "GET, POST";
 
 /**
- * GET     /api/items  → lista todos os items
- * POST    /api/items  → cria um novo item
- * HEAD    /api/items  → igual ao GET mas sem body (só headers)
- * OPTIONS /api/items  → retorna os métodos suportados
+ * GET  /api/items  → lista todos os items
+ * POST /api/items  → cria um novo item
  */
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Item[] | Item | ErrorResponse>,
 ) {
-  if (req.method === "OPTIONS") {
-    res.setHeader("Allow", ALLOWED_METHODS);
-    return res.status(204).end();
-  }
-
-  if (req.method === "HEAD") {
-    res.setHeader("X-Total-Count", store.items.length);
-    return res.status(200).end();
-  }
-
   if (req.method === "GET") {
     res.setHeader("X-Total-Count", store.items.length);
     return res.status(200).json(store.items);

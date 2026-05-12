@@ -41,16 +41,6 @@ const endpointGroups = [
           2,
         ),
       },
-      {
-        method: "HEAD",
-        description: "Verifica total de items (header X-Total-Count)",
-        body: null,
-      },
-      {
-        method: "OPTIONS",
-        description: "Retorna os métodos suportados (header Allow)",
-        body: null,
-      },
     ],
   },
   {
@@ -92,16 +82,6 @@ const endpointGroups = [
         description: "Remove um item pelo ID",
         body: null,
       },
-      {
-        method: "HEAD",
-        description: "Verifica se o item existe (200 / 404 sem body)",
-        body: null,
-      },
-      {
-        method: "OPTIONS",
-        description: "Retorna os métodos suportados (header Allow)",
-        body: null,
-      },
     ],
   },
 ];
@@ -112,8 +92,6 @@ const methodColor: Record<string, string> = {
   PUT: "#fca130",
   PATCH: "#50e3c2",
   DELETE: "#f93e3e",
-  HEAD: "#9b59b6",
-  OPTIONS: "#95a5a6",
 };
 
 export default function Home() {
