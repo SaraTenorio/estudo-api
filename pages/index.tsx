@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 
@@ -135,6 +136,12 @@ export default function Home() {
               .<br />
               Base URL: <code>{BASE}</code>
             </p>
+            <Link
+              href="/items"
+              style={{ fontSize: 14, color: "#58a6ff", textDecoration: "none" }}
+            >
+              Ver items em cards →
+            </Link>
           </div>
 
           <div className={styles.groups}>
