@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -12,8 +13,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-const BASE = typeof window !== "undefined" ? window.location.origin : "";
 
 const endpointGroups = [
   {
@@ -119,13 +118,19 @@ const methodColor: Record<string, string> = {
 };
 
 export default function Home() {
+  const [base, setBase] = useState("");
+
+  useEffect(() => {
+    setBase(window.location.origin);
+  }, []);
+
   return (
     <>
       <Head>
         <title>Estudo API</title>
         <meta name="description" content="Documentação da API de estudo" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/api.png" />
       </Head>
       <div
         className={`${styles.page} ${geistSans.variable} ${geistMono.variable}`}
@@ -137,7 +142,7 @@ export default function Home() {
               API REST de teste com operações CRUD sobre{" "}
               <code>/api/products</code>
               .<br />
-              Base URL: <code>{BASE}</code>
+              Base URL: <code>{base}</code>
             </p>
             <p style={{ fontSize: 13, color: "#8b949e", margin: "8px 0 4px" }}>
               Cada chamada à API modifica o <em>store</em> em memória — crie,

@@ -134,9 +134,9 @@ export default function ProductsPage() {
           </div>
 
           <p className={styles.hint}>
-            Esta página consome <code>/api/products</code> directamente. Use os
-            botões acima ou faça chamadas à API (na página inicial) e carregue{" "}
-            <strong>↻</strong> para ver as alterações aqui.
+            Esta página consome <code>/api/products</code> diretamente. Use os
+            botões acima ou faça chamadas à API (listadas na página inicial) e
+            carregue <strong>↻</strong> para ver as alterações aqui.
           </p>
 
           {loading ? (
