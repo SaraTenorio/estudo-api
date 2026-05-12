@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { store, makeRandomProduct } from "../_store";
+import { store, makeRandomProduct } from "../../../lib/store";
 
 type SuccessResponse = { message: string };
 type ErrorResponse = { error: string };

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
-import type { Product } from "./api/_store";
+import type { Product } from "../lib/store";
 import styles from "@/styles/Products.module.css";
 
 const geistSans = Geist({
