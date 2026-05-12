@@ -109,11 +109,6 @@ export default function ProductsPage() {
               ← Voltar à API
             </Link>
             <h1 className={styles.title}>Produtos</h1>
-            <p className={styles.hint}>
-              Esta página consome <code>/api/products</code> directamente. Use
-              os botões abaixo ou faça chamadas à API (na página inicial) e
-              carregue <strong>↻</strong> para ver as alterações aqui.
-            </p>
             <button
               className={styles.refreshBtn}
               onClick={handleRefresh}
@@ -137,6 +132,12 @@ export default function ProductsPage() {
               {resetting ? "Resetando…" : "Resetar store"}
             </button>
           </div>
+
+          <p className={styles.hint}>
+            Esta página consome <code>/api/products</code> directamente. Use os
+            botões acima ou faça chamadas à API (na página inicial) e carregue{" "}
+            <strong>↻</strong> para ver as alterações aqui.
+          </p>
 
           {loading ? (
             <p className={styles.empty}>Carregando produtos…</p>
