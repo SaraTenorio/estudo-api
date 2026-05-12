@@ -26,7 +26,12 @@ npm run dev
 
 O servidor fica disponível em **https://localhost:3000**.
 
-Abre o browser em `https://localhost:3000` para ver a página de documentação dos endpoints.
+Abre o browser nas seguintes páginas:
+
+| URL                               | Descrição                                         |
+| --------------------------------- | ------------------------------------------------- |
+| `https://localhost:3000`          | Documentação dos endpoints da API                 |
+| `https://localhost:3000/products` | Visualização dos produtos em cards (interface UI) |
 
 > **HTTPS local:** O servidor de desenvolvimento arranca com HTTPS usando a flag `--experimental-https`. O Next.js gera automaticamente um certificado auto-assinado localmente através do [`mkcert`](https://github.com/FiloSottile/mkcert). Na primeira execução pode ser necessário aceitar o certificado no browser.
 
