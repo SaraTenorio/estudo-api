@@ -1,4 +1,4 @@
-export interface Item {
+export interface Product {
   id: number;
   name: string;
   description: string;
@@ -11,16 +11,16 @@ export interface Item {
 // In-memory store shared across API routes (persists during dev server lifetime)
 declare global {
   // eslint-disable-next-line no-var
-  var __store: { items: Item[]; nextId: number } | undefined;
+  var __store: { products: Product[]; nextId: number } | undefined;
 }
 
 if (!global.__store) {
   global.__store = {
-    items: [
+    products: [
       {
         id: 1,
-        name: "Item A",
-        description: "Primeiro item de exemplo",
+        name: "Produto A",
+        description: "Primeiro produto de exemplo",
         price: 9.99,
         quantity: 10,
         active: true,
@@ -28,8 +28,8 @@ if (!global.__store) {
       },
       {
         id: 2,
-        name: "Item B",
-        description: "Segundo item de exemplo",
+        name: "Produto B",
+        description: "Segundo produto de exemplo",
         price: 24.5,
         quantity: 3,
         active: false,

@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
-import type { Item } from "./api/_store";
-import styles from "@/styles/Items.module.css";
+import type { Product } from "./api/_store";
+import styles from "@/styles/Products.module.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,39 +16,49 @@ const geistMono = Geist_Mono({
 });
 
 function formatPrice(value: number): string {
-  return value.toLocaleString("pt-PT", { style: "currency", currency: "EUR" });
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "EUR" });
 }
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("pt-PT", {
+  return new Date(iso).toLocaleDateString("pt-BR", {
     day: "2-digit",
     month: "short",
     year: "numeric",
   });
 }
 
-export default function ItemsPage() {
-  const [items, setItems] = useState<Item[]>([]);
+export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
-  const fetchItems = useCallback(async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/items");
-      const data: Item[] = await res.json();
-      setItems(data);
+      const res = await fetch("/api/products");
+      const data: Product[] = await res.json();
+      setProducts(data);
     } finally {
       setLoading(false);
     }
   }, []);
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await fetchProducts();
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   const handleReset = async () => {
     setResetting(true);
     try {
-      await fetch("/api/items/reset", { method: "POST" });
-      await fetchItems();
+      await fetch("/api/products/reset", { method: "POST" });
+      await fetchProducts();
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2500);
     } finally {
@@ -57,14 +67,14 @@ export default function ItemsPage() {
   };
 
   useEffect(() => {
-    fetchItems();
-  }, [fetchItems]);
+    fetchProducts();
+  }, [fetchProducts]);
 
   return (
     <>
       <Head>
-        <title>Items | Estudo API</title>
-        <meta name="description" content="Lista de items em cards" />
+        <title>Produtos | Estudo API</title>
+        <meta name="description" content="Lista de produtos em cards" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -77,56 +87,66 @@ export default function ItemsPage() {
             <Link href="/" className={styles.backLink}>
               ← Voltar à API
             </Link>
-            <h1 className={styles.title}>Items</h1>
+            <h1 className={styles.title}>Produtos</h1>
+            <button
+              className={styles.refreshBtn}
+              onClick={handleRefresh}
+              disabled={refreshing || loading}
+              title="Atualizar dados"
+            >
+              {refreshing ? "↻" : "↻"}
+            </button>
             <button
               className={styles.resetBtn}
               onClick={handleReset}
               disabled={resetting || loading}
             >
-              {resetting ? "A resetar…" : "Resetar store"}
+              {resetting ? "Resetando…" : "Resetar store"}
             </button>
           </div>
 
           {loading ? (
-            <p className={styles.empty}>A carregar items…</p>
-          ) : items.length === 0 ? (
-            <p className={styles.empty}>Nenhum item encontrado.</p>
+            <p className={styles.empty}>Carregando produtos…</p>
+          ) : products.length === 0 ? (
+            <p className={styles.empty}>Nenhum produto encontrado.</p>
           ) : (
             <div className={styles.grid}>
-              {items.map((item) => (
-                <div key={item.id} className={styles.card}>
+              {products.map((product) => (
+                <div key={product.id} className={styles.card}>
                   <div className={styles.cardHeader}>
-                    <h2 className={styles.cardName}>{item.name}</h2>
+                    <h2 className={styles.cardName}>{product.name}</h2>
                     <span
-                      className={`${styles.badge} ${item.active ? styles.badgeActive : styles.badgeInactive}`}
+                      className={`${styles.badge} ${product.active ? styles.badgeActive : styles.badgeInactive}`}
                     >
-                      {item.active ? "Activo" : "Inactivo"}
+                      {product.active ? "Ativo" : "Inativo"}
                     </span>
                   </div>
 
-                  {item.description && (
-                    <p className={styles.cardDesc}>{item.description}</p>
+                  {product.description && (
+                    <p className={styles.cardDesc}>{product.description}</p>
                   )}
 
                   <div className={styles.cardMeta}>
                     <div className={styles.metaRow}>
                       <span className={styles.metaLabel}>ID</span>
-                      <span className={styles.metaValue}>#{item.id}</span>
+                      <span className={styles.metaValue}>#{product.id}</span>
                     </div>
                     <div className={styles.metaRow}>
                       <span className={styles.metaLabel}>Preço</span>
                       <span className={styles.metaValue}>
-                        {formatPrice(item.price)}
+                        {formatPrice(product.price)}
                       </span>
                     </div>
                     <div className={styles.metaRow}>
                       <span className={styles.metaLabel}>Quantidade</span>
-                      <span className={styles.metaValue}>{item.quantity}</span>
+                      <span className={styles.metaValue}>
+                        {product.quantity}
+                      </span>
                     </div>
                     <div className={styles.metaRow}>
                       <span className={styles.metaLabel}>Criado em</span>
                       <span className={styles.metaValue}>
-                        {formatDate(item.createdAt)}
+                        {formatDate(product.createdAt)}
                       </span>
                     </div>
                   </div>

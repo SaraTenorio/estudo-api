@@ -37,58 +37,66 @@ Abre o browser em `http://localhost:3000` para ver a página de documentação d
 ```
 pages/
   index.tsx              ← Página de documentação da API
+  products.tsx           ← Página de visualização em cards
   api/
     _store.ts            ← Store em memória partilhado entre rotas
     hello.ts             ← Rota de exemplo do Next.js
-    items/
-      index.ts           ← GET /api/items · POST
-      [id].ts            ← GET /api/items/:id · PUT · PATCH · DELETE
+    products/
+      index.ts           ← GET /api/products · POST
+      [id].ts            ← GET /api/products/:id · PUT · PATCH · DELETE
+      reset.ts           ← POST /api/products/reset
 ```
 
 ---
 
-## Modelo de dados — `Item`
+## Modelo de dados — `Product`
 
 | Campo         | Tipo      | Obrigatório | Default                    | Descrição                         |
 | ------------- | --------- | ----------- | -------------------------- | --------------------------------- |
 | `id`          | `number`  | automático  | —                          | Identificador único (inteiro)     |
-| `name`        | `string`  | ✅          | —                          | Nome do item                      |
+| `name`        | `string`  | ✅          | —                          | Nome do produto                   |
 | `description` | `string`  | ❌          | `""`                       | Descrição livre                   |
 | `price`       | `number`  | ❌          | `0`                        | Preço decimal                     |
 | `quantity`    | `number`  | ❌          | `0`                        | Quantidade em stock (inteiro ≥ 0) |
-| `active`      | `boolean` | ❌          | `true`                     | Estado ativo/desativo             |
+| `active`      | `boolean` | ❌          | `true`                     | Estado ativo/inativo              |
 | `createdAt`   | `string`  | ❌          | `new Date().toISOString()` | Data de criação (ISO 8601)        |
 
 ---
 
 ## Endpoints
 
-### Coleção — `/api/items`
+### Coleção — `/api/products`
 
-| Método | Descrição            |
-| ------ | -------------------- |
-| `GET`  | Lista todos os items |
-| `POST` | Cria um novo item    |
+| Método | Descrição               |
+| ------ | ----------------------- |
+| `GET`  | Lista todos os produtos |
+| `POST` | Cria um novo produto    |
 
-### Item individual — `/api/items/:id`
+### Produto individual — `/api/products/:id`
 
 | Método   | Descrição                    |
 | -------- | ---------------------------- |
-| `GET`    | Retorna um item pelo ID      |
-| `PUT`    | Substitui o item completo    |
+| `GET`    | Retorna um produto pelo ID   |
+| `PUT`    | Substitui o produto completo |
 | `PATCH`  | Atualiza campos parcialmente |
-| `DELETE` | Remove o item                |
+| `DELETE` | Remove o produto             |
+
+### Reset — `/api/products/reset`
+
+| Método | Descrição                          |
+| ------ | ---------------------------------- |
+| `POST` | Restaura o store ao estado inicial |
 
 ---
 
 ## Exemplos de body (JSON)
 
-### POST `/api/items`
+### POST `/api/products`
 
 ```json
 {
-  "name": "Novo item",
-  "description": "Descrição do item",
+  "name": "Novo produto",
+  "description": "Descrição do produto",
   "price": 9.99,
   "quantity": 5,
   "active": true,
@@ -96,11 +104,11 @@ pages/
 }
 ```
 
-### PUT `/api/items/:id`
+### PUT `/api/products/:id`
 
 ```json
 {
-  "name": "Item actualizado",
+  "name": "Produto atualizado",
   "description": "Nova descrição",
   "price": 19.99,
   "quantity": 8,
@@ -109,7 +117,7 @@ pages/
 }
 ```
 
-### PATCH `/api/items/:id` — apenas os campos a alterar
+### PATCH `/api/products/:id` — apenas os campos a alterar
 
 ```json
 {
@@ -134,13 +142,13 @@ pages/
 
 ## Dados iniciais
 
-O store arranca com 2 items pré-carregados:
+O store arranca com 2 produtos pré-carregados:
 
 ```json
 [
   {
     "id": 1,
-    "name": "Item A",
+    "name": "Produto A",
     "price": 9.99,
     "quantity": 10,
     "active": true,
@@ -148,7 +156,7 @@ O store arranca com 2 items pré-carregados:
   },
   {
     "id": 2,
-    "name": "Item B",
+    "name": "Produto B",
     "price": 24.5,
     "quantity": 3,
     "active": false,

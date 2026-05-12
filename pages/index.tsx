@@ -18,19 +18,19 @@ const BASE = "http://localhost:3000";
 const endpointGroups = [
   {
     title: "Coleção",
-    resource: "/api/items",
+    resource: "/api/products",
     endpoints: [
       {
         method: "GET",
-        description: "Lista todos os items",
+        description: "Lista todos os produtos",
         body: null,
       },
       {
         method: "POST",
-        description: "Cria um novo item",
+        description: "Cria um novo produto",
         body: JSON.stringify(
           {
-            name: "Novo item",
+            name: "Novo produto",
             description: "Descrição",
             price: 9.99,
             quantity: 5,
@@ -44,20 +44,20 @@ const endpointGroups = [
     ],
   },
   {
-    title: "Item individual",
-    resource: "/api/items/:id",
+    title: "Produto individual",
+    resource: "/api/products/:id",
     endpoints: [
       {
         method: "GET",
-        description: "Retorna um item pelo ID",
+        description: "Retorna um produto pelo ID",
         body: null,
       },
       {
         method: "PUT",
-        description: "Substitui o item completo",
+        description: "Substitui o produto completo",
         body: JSON.stringify(
           {
-            name: "Nome actualizado",
+            name: "Nome atualizado",
             description: "Nova descrição",
             price: 19.99,
             quantity: 8,
@@ -79,7 +79,7 @@ const endpointGroups = [
       },
       {
         method: "DELETE",
-        description: "Remove um item pelo ID",
+        description: "Remove um produto pelo ID",
         body: null,
       },
     ],
@@ -110,15 +110,16 @@ export default function Home() {
           <div className={styles.intro}>
             <h1>Estudo API</h1>
             <p>
-              API REST de teste com operações CRUD sobre <code>/api/items</code>
+              API REST de teste com operações CRUD sobre{" "}
+              <code>/api/products</code>
               .<br />
               Base URL: <code>{BASE}</code>
             </p>
             <Link
-              href="/items"
+              href="/products"
               style={{ fontSize: 14, color: "#58a6ff", textDecoration: "none" }}
             >
-              Ver items em cards →
+              Ver produtos em cards →
             </Link>
           </div>
 
