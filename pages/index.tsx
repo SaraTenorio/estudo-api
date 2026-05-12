@@ -139,6 +139,11 @@ export default function Home() {
               .<br />
               Base URL: <code>{BASE}</code>
             </p>
+            <p style={{ fontSize: 13, color: "#8b949e", margin: "8px 0 4px" }}>
+              Cada chamada à API modifica o <em>store</em> em memória — crie,
+              edite ou apague produtos aqui e veja o resultado reflectido em{" "}
+              <strong>tempo real</strong> na página de cards.
+            </p>
             <Link
               href="/products"
               style={{ fontSize: 14, color: "#58a6ff", textDecoration: "none" }}

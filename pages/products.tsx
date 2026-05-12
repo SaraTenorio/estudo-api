@@ -109,6 +109,11 @@ export default function ProductsPage() {
               ← Voltar à API
             </Link>
             <h1 className={styles.title}>Produtos</h1>
+            <p className={styles.hint}>
+              Esta página consome <code>/api/products</code> directamente. Use
+              os botões abaixo ou faça chamadas à API (na página inicial) e
+              carregue <strong>↻</strong> para ver as alterações aqui.
+            </p>
             <button
               className={styles.refreshBtn}
               onClick={handleRefresh}
