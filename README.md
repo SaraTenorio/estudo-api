@@ -1,40 +1,173 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Estudo API
 
-## Getting Started
+API REST de teste construída com **Next.js** (Pages Router) e **TypeScript**, com dados em memória. Ideal para testar requisições HTTP no Postman ou qualquer cliente REST.
 
-First, run the development server:
+---
+
+## Pré-requisitos
+
+- [Node.js](https://nodejs.org/) LTS (v18+)
+- npm (incluído com o Node.js)
+
+---
+
+## Instalação e arranque
 
 ```bash
+# 1. Entrar na pasta do projeto
+cd estudo
+
+# 2. Instalar dependências (apenas na primeira vez)
+npm install
+
+# 3. Arrancar o servidor de desenvolvimento
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+O servidor fica disponível em **http://localhost:3000**.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+Abre o browser em `http://localhost:3000` para ver a página de documentação dos endpoints.
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+> **Nota:** os dados vivem em memória e são reiniciados sempre que o servidor é reiniciado. Os dados iniciais são carregados automaticamente.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Estrutura do projeto
 
-## Learn More
+```
+pages/
+  index.tsx              ← Página de documentação da API
+  api/
+    _store.ts            ← Store em memória partilhado entre rotas
+    hello.ts             ← Rota de exemplo do Next.js
+    items/
+      index.ts           ← GET /api/items · POST · HEAD · OPTIONS
+      [id].ts            ← GET /api/items/:id · PUT · PATCH · DELETE · HEAD · OPTIONS
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+## Modelo de dados — `Item`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Campo         | Tipo      | Obrigatório | Default                    | Descrição                         |
+| ------------- | --------- | ----------- | -------------------------- | --------------------------------- |
+| `id`          | `number`  | automático  | —                          | Identificador único (inteiro)     |
+| `name`        | `string`  | ✅          | —                          | Nome do item                      |
+| `description` | `string`  | ❌          | `""`                       | Descrição livre                   |
+| `price`       | `number`  | ❌          | `0`                        | Preço decimal                     |
+| `quantity`    | `number`  | ❌          | `0`                        | Quantidade em stock (inteiro ≥ 0) |
+| `active`      | `boolean` | ❌          | `true`                     | Estado ativo/desativo             |
+| `createdAt`   | `string`  | ❌          | `new Date().toISOString()` | Data de criação (ISO 8601)        |
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Endpoints
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+### Coleção — `/api/items`
+
+| Método    | Descrição                                          |
+| --------- | -------------------------------------------------- |
+| `GET`     | Lista todos os items                               |
+| `POST`    | Cria um novo item                                  |
+| `HEAD`    | Devolve o header `X-Total-Count` com o total       |
+| `OPTIONS` | Devolve o header `Allow` com os métodos suportados |
+
+### Item individual — `/api/items/:id`
+
+| Método    | Descrição                                          |
+| --------- | -------------------------------------------------- |
+| `GET`     | Retorna um item pelo ID                            |
+| `PUT`     | Substitui o item completo                          |
+| `PATCH`   | Atualiza campos parcialmente                       |
+| `DELETE`  | Remove o item                                      |
+| `HEAD`    | Verifica se o item existe (200 / 404 sem body)     |
+| `OPTIONS` | Devolve o header `Allow` com os métodos suportados |
+
+---
+
+## Exemplos de body (JSON)
+
+### POST `/api/items`
+
+```json
+{
+  "name": "Novo item",
+  "description": "Descrição do item",
+  "price": 9.99,
+  "quantity": 5,
+  "active": true,
+  "createdAt": "2026-05-12T10:00:00.000Z"
+}
+```
+
+### PUT `/api/items/:id`
+
+```json
+{
+  "name": "Item actualizado",
+  "description": "Nova descrição",
+  "price": 19.99,
+  "quantity": 8,
+  "active": true,
+  "createdAt": "2026-05-12T10:00:00.000Z"
+}
+```
+
+### PATCH `/api/items/:id` — apenas os campos a alterar
+
+```json
+{
+  "active": false,
+  "price": 5.5,
+  "quantity": 2
+}
+```
+
+---
+
+## Validações
+
+- `name` — obrigatório em POST e PUT; deve ser `string`
+- `price` — deve ser `number` (decimal)
+- `quantity` — deve ser um inteiro não negativo
+- `createdAt` — deve ser uma data ISO 8601 válida (ex: `"2026-05-12T10:00:00.000Z"`)
+- Campos inválidos retornam `400 Bad Request` com `{ "error": "..." }`
+- Método não suportado retorna `405 Method Not Allowed` com header `Allow`
+
+---
+
+## Dados iniciais
+
+O store arranca com 2 items pré-carregados:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Item A",
+    "price": 9.99,
+    "quantity": 10,
+    "active": true,
+    "createdAt": "2026-01-15T09:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "Item B",
+    "price": 24.5,
+    "quantity": 3,
+    "active": false,
+    "createdAt": "2026-03-22T14:30:00.000Z"
+  }
+]
+```
+
+---
+
+## Scripts disponíveis
+
+| Comando         | Descrição                            |
+| --------------- | ------------------------------------ |
+| `npm run dev`   | Inicia o servidor de desenvolvimento |
+| `npm run build` | Compila o projeto para produção      |
+| `npm run start` | Inicia o servidor em modo produção   |
+| `npm run lint`  | Corre o linter                       |
