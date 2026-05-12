@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const BASE = "https://localhost:3000";
+const BASE = typeof window !== "undefined" ? window.location.origin : "";
 
 const endpointGroups = [
   {
