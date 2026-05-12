@@ -42,11 +42,12 @@ Abre o browser nas seguintes páginas:
 ## Estrutura do projeto
 
 ```
+lib/
+  store.ts               ← Store em memória + makeRandomProduct (partilhado)
 pages/
   index.tsx              ← Página de documentação da API
   products.tsx           ← Página de visualização em cards
   api/
-    _store.ts            ← Store em memória + makeRandomProduct (partilhado)
     hello.ts             ← Rota de exemplo do Next.js
     products/
       index.ts           ← GET /api/products · POST /api/products
