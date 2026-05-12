@@ -24,9 +24,11 @@ npm install
 npm run dev
 ```
 
-O servidor fica disponível em **http://localhost:3000**.
+O servidor fica disponível em **https://localhost:3000**.
 
-Abre o browser em `http://localhost:3000` para ver a página de documentação dos endpoints.
+Abre o browser em `https://localhost:3000` para ver a página de documentação dos endpoints.
+
+> **HTTPS local:** O servidor de desenvolvimento arranca com HTTPS usando a flag `--experimental-https`. O Next.js gera automaticamente um certificado auto-assinado localmente através do [`mkcert`](https://github.com/FiloSottile/mkcert). Na primeira execução pode ser necessário aceitar o certificado no browser.
 
 > **Nota:** os dados vivem em memória e são reiniciados sempre que o servidor é reiniciado. Os dados iniciais são carregados automaticamente.
 
@@ -155,9 +157,9 @@ O store arranca com **2 produtos aleatórios** gerados automaticamente (nomes, p
 
 ## Scripts disponíveis
 
-| Comando         | Descrição                            |
-| --------------- | ------------------------------------ |
-| `npm run dev`   | Inicia o servidor de desenvolvimento |
-| `npm run build` | Compila o projeto para produção      |
-| `npm run start` | Inicia o servidor em modo produção   |
-| `npm run lint`  | Corre o linter                       |
+| Comando         | Descrição                                          |
+| --------------- | -------------------------------------------------- |
+| `npm run dev`   | Inicia o servidor de desenvolvimento (HTTPS local) |
+| `npm run build` | Compila o projeto para produção                    |
+| `npm run start` | Inicia o servidor em modo produção                 |
+| `npm run lint`  | Corre o linter                                     |
