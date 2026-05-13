@@ -117,6 +117,26 @@ const methodColor: Record<string, string> = {
   DELETE: "#f93e3e",
 };
 
+function CopyButton({ text, title }: { text: string; title?: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+  };
+
+  return (
+    <button
+      className={styles.copyBtn}
+      onClick={handleCopy}
+      title={title ?? "Copiar"}
+    >
+      {copied ? "✓" : "⎘"}
+    </button>
+  );
+}
+
 export default function Home() {
   const [base, setBase] = useState("");
 
@@ -163,6 +183,7 @@ export default function Home() {
                 <div className={styles.groupHeader}>
                   <span className={styles.groupTitle}>{group.title}</span>
                   <code className={styles.groupResource}>{group.resource}</code>
+                  <CopyButton text={group.resource} title="Copiar path" />
                 </div>
                 <div className={styles.endpoints}>
                   {group.endpoints.map((ep) => (
@@ -178,7 +199,12 @@ export default function Home() {
                       </div>
                       {ep.body && (
                         <div className={styles.body}>
-                          <span className={styles.bodyLabel}>Body (JSON)</span>
+                          <div className={styles.bodyHeader}>
+                            <span className={styles.bodyLabel}>
+                              Body (JSON)
+                            </span>
+                            <CopyButton text={ep.body} title="Copiar body" />
+                          </div>
                           <pre className={styles.pre}>{ep.body}</pre>
                         </div>
                       )}
