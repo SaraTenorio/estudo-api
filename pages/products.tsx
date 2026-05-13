@@ -35,6 +35,7 @@ export default function ProductsPage() {
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
   const [adding, setAdding] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -66,6 +67,19 @@ export default function ProductsPage() {
       setTimeout(() => setShowToast(false), 2500);
     } finally {
       setResetting(false);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    setDeletingId(id);
+    try {
+      await fetch(`/api/products/${id}`, { method: "DELETE" });
+      await fetchProducts();
+      setToastMsg(`Produto #${id} removido ✓`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2500);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -149,11 +163,21 @@ export default function ProductsPage() {
                 <div key={product.id} className={styles.card}>
                   <div className={styles.cardHeader}>
                     <h2 className={styles.cardName}>{product.name}</h2>
-                    <span
-                      className={`${styles.badge} ${product.active ? styles.badgeActive : styles.badgeInactive}`}
-                    >
-                      {product.active ? "Ativo" : "Inativo"}
-                    </span>
+                    <div className={styles.cardHeaderRight}>
+                      <span
+                        className={`${styles.badge} ${product.active ? styles.badgeActive : styles.badgeInactive}`}
+                      >
+                        {product.active ? "Ativo" : "Inativo"}
+                      </span>
+                      <button
+                        className={styles.deleteBtn}
+                        onClick={() => handleDelete(product.id)}
+                        disabled={deletingId === product.id}
+                        title="Remover produto"
+                      >
+                        🗑
+                      </button>
+                    </div>
                   </div>
 
                   {product.description && (

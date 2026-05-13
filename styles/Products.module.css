@@ -180,6 +180,37 @@
     gap: 8px;
 }
 
+.cardHeaderRight {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.deleteBtn {
+    font-size: 14px;
+    line-height: 1;
+    padding: 3px 6px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #8b949e;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+
+.deleteBtn:hover:not(:disabled) {
+    background: rgba(248, 81, 73, 0.15);
+    border-color: rgba(248, 81, 73, 0.4);
+    color: #f85149;
+}
+
+.deleteBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 .cardName {
     font-size: 16px;
     font-weight: 700;
