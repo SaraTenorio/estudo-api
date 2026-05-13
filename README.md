@@ -32,6 +32,7 @@ Abre o browser nas seguintes páginas:
 | ------------------------------------ | ------------------------------------------------- |
 | `https://localhost:3000`             | Documentação dos endpoints da API                 |
 | `https://localhost:3000/products`    | Visualização dos produtos em cards (interface UI) |
+| `https://localhost:3000/products/id` | Página de detalhes de um produto                  |
 | `https://localhost:3000/sitemap.xml` | Sitemap XML com páginas estáticas e produtos      |
 | `https://localhost:3000/feed.xml`    | RSS Feed com todos os produtos                    |
 
@@ -49,6 +50,8 @@ lib/
 pages/
   index.tsx              ← Página de documentação da API
   products.tsx           ← Página de visualização em cards
+  products/
+    [id].tsx             ← Página de detalhes do produto (toggle ativo, remover)
   sitemap.xml.tsx        ← GET /sitemap.xml — Sitemap XML dinâmico
   feed.xml.tsx           ← GET /feed.xml — RSS Feed dos produtos
   api/
@@ -176,6 +179,29 @@ pages/
 ## Dados iniciais
 
 O store arranca com **2 produtos aleatórios** gerados automaticamente (nomes, preços e quantidades variam a cada arranque do servidor). O endpoint de reset também regenera esses 2 produtos com dados aleatórios novos.
+
+---
+
+## Interface UI — funcionalidades
+
+### Página de lista (`/products`)
+
+- Visualização em cards de todos os produtos do store
+- Botão **↻** para refrescar a lista
+- Botão **+ Produto aleatório** para criar um produto via `POST /api/products/random`
+- Botão **Resetar store** para repor o estado inicial via `POST /api/products/reset`
+- Botão **🗑** em cada card para remover o produto via `DELETE /api/products/id`
+- Link **Ver detalhes →** em cada card para navegar para a página de detalhes
+- Links para `/sitemap.xml` e `/feed.xml` no rodapé
+
+### Página de detalhes (`/products/id`)
+
+- Dados organizados em secções: **Identificação**, **Inventário**, **Metadados**
+- **Toggle switch** para ativar/desativar o produto via `PATCH /api/products/id`
+- Botão **🗑 Remover** para apagar o produto e regressar à lista
+- Botão **↻** para refrescar os dados
+- Bloco JSON com a resposta raw de `GET /api/products/id`
+- Página 404 estilizada se o produto não existir
 
 ---
 

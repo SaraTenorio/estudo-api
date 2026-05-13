@@ -208,6 +208,13 @@ export default function ProductsPage() {
                       </span>
                     </div>
                   </div>
+
+                  <Link
+                    href={`/products/${product.id}`}
+                    className={styles.detailLink}
+                  >
+                    Ver detalhes →
+                  </Link>
                 </div>
               ))}
             </div>
