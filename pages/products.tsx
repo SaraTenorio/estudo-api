@@ -111,7 +111,7 @@ export default function ProductsPage() {
         <title>Produtos | Estudo API</title>
         <meta name="description" content="Lista de produtos em cards" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/api.png" />
       </Head>
 
       <div
@@ -212,6 +212,54 @@ export default function ProductsPage() {
               ))}
             </div>
           )}
+
+          <div className={styles.metaLinks}>
+            <a
+              href="/sitemap.xml"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.metaLink}
+              title="Sitemap XML"
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              sitemap.xml
+            </a>
+            <a
+              href="/feed.xml"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${styles.metaLink} ${styles.metaLinkRss}`}
+              title="RSS Feed"
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <circle cx="5" cy="19" r="2" />
+                <path d="M4 4a16 16 0 0 1 16 16" />
+                <path d="M4 11a9 9 0 0 1 9 9" />
+              </svg>
+              feed.xml
+            </a>
+          </div>
         </main>
       </div>
 

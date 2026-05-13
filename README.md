@@ -28,10 +28,12 @@ O servidor fica disponível em **https://localhost:3000**.
 
 Abre o browser nas seguintes páginas:
 
-| URL                               | Descrição                                         |
-| --------------------------------- | ------------------------------------------------- |
-| `https://localhost:3000`          | Documentação dos endpoints da API                 |
-| `https://localhost:3000/products` | Visualização dos produtos em cards (interface UI) |
+| URL                                  | Descrição                                         |
+| ------------------------------------ | ------------------------------------------------- |
+| `https://localhost:3000`             | Documentação dos endpoints da API                 |
+| `https://localhost:3000/products`    | Visualização dos produtos em cards (interface UI) |
+| `https://localhost:3000/sitemap.xml` | Sitemap XML com páginas estáticas e produtos      |
+| `https://localhost:3000/feed.xml`    | RSS Feed com todos os produtos                    |
 
 > **HTTPS local:** O servidor de desenvolvimento arranca com HTTPS usando a flag `--experimental-https`. O Next.js gera automaticamente um certificado auto-assinado localmente através do [`mkcert`](https://github.com/FiloSottile/mkcert). Na primeira execução pode ser necessário aceitar o certificado no browser.
 
@@ -47,6 +49,8 @@ lib/
 pages/
   index.tsx              ← Página de documentação da API
   products.tsx           ← Página de visualização em cards
+  sitemap.xml.tsx        ← GET /sitemap.xml — Sitemap XML dinâmico
+  feed.xml.tsx           ← GET /feed.xml — RSS Feed dos produtos
   api/
     hello.ts             ← Rota de exemplo do Next.js
     products/
@@ -101,6 +105,20 @@ pages/
 | Método | Descrição                                             |
 | ------ | ----------------------------------------------------- |
 | `POST` | Restaura o store com 2 produtos aleatórios (sem body) |
+
+### Sitemap — `/sitemap.xml`
+
+| Método | Descrição                                                                         |
+| ------ | --------------------------------------------------------------------------------- |
+| `GET`  | Sitemap XML com páginas estáticas (`/`, `/products`) e todos os produtos do store |
+
+### RSS Feed — `/feed.xml`
+
+| Método | Descrição                                                                  |
+| ------ | -------------------------------------------------------------------------- |
+| `GET`  | RSS 2.0 com todos os produtos ordenados do mais recente para o mais antigo |
+
+> Ambas as rotas são geradas dinamicamente (`getServerSideProps`) sem cache, pelo que reflectem sempre o estado atual do store.
 
 ---
 

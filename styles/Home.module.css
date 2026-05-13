@@ -63,6 +63,53 @@
   color: var(--text-primary);
 }
 
+.metaLinks {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.navRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.metaLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-family: var(--font-geist-mono);
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--code-bg);
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.metaLink:hover {
+  color: #58a6ff;
+  border-color: rgba(88, 166, 255, 0.4);
+  background: rgba(88, 166, 255, 0.08);
+}
+
+.metaLinkRss {
+  color: #f0883e;
+}
+
+.metaLinkRss:hover {
+  color: #f0883e;
+  border-color: rgba(240, 136, 62, 0.45);
+  background: rgba(240, 136, 62, 0.1);
+}
+
 /* ── Endpoint groups ── */
 .groups {
   display: flex;

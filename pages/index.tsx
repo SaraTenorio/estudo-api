@@ -107,6 +107,28 @@ const endpointGroups = [
       },
     ],
   },
+  {
+    title: "Sitemap",
+    resource: "/sitemap.xml",
+    endpoints: [
+      {
+        method: "GET",
+        description: "Sitemap XML com páginas estáticas e produtos",
+        body: null,
+      },
+    ],
+  },
+  {
+    title: "RSS Feed",
+    resource: "/feed.xml",
+    endpoints: [
+      {
+        method: "GET",
+        description: "Feed RSS com todos os produtos ordenados por data",
+        body: null,
+      },
+    ],
+  },
 ];
 
 const methodColor: Record<string, string> = {
@@ -169,12 +191,65 @@ export default function Home() {
               edite ou apague produtos aqui e veja o resultado reflectido em{" "}
               <strong>tempo real</strong> na página de cards.
             </p>
-            <Link
-              href="/products"
-              style={{ fontSize: 14, color: "#58a6ff", textDecoration: "none" }}
-            >
-              Ver produtos em cards →
-            </Link>
+            <div className={styles.navRow}>
+              <Link
+                href="/products"
+                style={{
+                  fontSize: 14,
+                  color: "#58a6ff",
+                  textDecoration: "none",
+                }}
+              >
+                Ver produtos em cards →
+              </Link>
+              <div className={styles.metaLinks}>
+                <a
+                  href="/sitemap.xml"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.metaLink}
+                  title="Sitemap XML"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                  </svg>
+                  sitemap.xml
+                </a>
+                <a
+                  href="/feed.xml"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${styles.metaLink} ${styles.metaLinkRss}`}
+                  title="RSS Feed"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <circle cx="5" cy="19" r="2" />
+                    <path d="M4 4a16 16 0 0 1 16 16" />
+                    <path d="M4 11a9 9 0 0 1 9 9" />
+                  </svg>
+                  feed.xml
+                </a>
+              </div>
+            </div>
           </div>
 
           <div className={styles.groups}>
