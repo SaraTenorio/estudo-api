@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { store } from "../../../lib/store";
 import type { Product } from "../../../lib/store";
+import { validateProductBody } from "../../../lib/product-validation";
 
 type ErrorResponse = { error: string };
 
@@ -20,37 +21,18 @@ export default function handler(
   }
 
   if (req.method === "POST") {
-    const { name, description, price, quantity, active, createdAt } =
-      req.body as Partial<Product>;
+    const body = req.body as Partial<Product>;
 
-    if (!name || typeof name !== "string") {
-      return res.status(400).json({ error: 'O campo "name" é obrigatório' });
+    const validationError = validateProductBody(body);
+    if (validationError) {
+      return res.status(400).json({ error: validationError });
     }
 
-    if (price !== undefined && typeof price !== "number") {
-      return res
-        .status(400)
-        .json({ error: '"price" deve ser um número decimal' });
-    }
-
-    if (
-      quantity !== undefined &&
-      (!Number.isInteger(quantity) || quantity < 0)
-    ) {
-      return res
-        .status(400)
-        .json({ error: '"quantity" deve ser um inteiro não negativo' });
-    }
-
-    if (createdAt !== undefined && isNaN(Date.parse(createdAt))) {
-      return res
-        .status(400)
-        .json({ error: '"createdAt" deve ser uma data ISO 8601 válida' });
-    }
+    const { name, description, price, quantity, active, createdAt } = body;
 
     const newProduct: Product = {
       id: store.nextId++,
-      name,
+      name: name!,
       description: description ?? "",
       price: price ?? 0,
       quantity: quantity ?? 0,

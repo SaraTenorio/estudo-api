@@ -20,7 +20,7 @@ function buildSitemap(base: string): string {
     .map(
       (p) => `
   <url>
-    <loc>${base}/api/products/${p.id}</loc>
+    <loc>${base}/products/${p.id}</loc>
     <lastmod>${p.createdAt}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>

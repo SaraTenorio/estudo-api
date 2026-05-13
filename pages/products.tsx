@@ -1,35 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { Geist, Geist_Mono } from "next/font/google";
 import type { Product } from "../lib/store";
+import { formatPrice, formatDate } from "../lib/formatters";
 import styles from "@/styles/Products.module.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-function formatPrice(value: number): string {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "EUR" });
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -39,10 +18,14 @@ export default function ProductsPage() {
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch("/api/products");
+      if (!res.ok) throw new Error(`Erro ao carregar produtos (${res.status})`);
       const data: Product[] = await res.json();
       setProducts(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
     } finally {
       setLoading(false);
     }
@@ -114,9 +97,7 @@ export default function ProductsPage() {
         <link rel="icon" href="/api.png" />
       </Head>
 
-      <div
-        className={`${styles.page} ${geistSans.variable} ${geistMono.variable}`}
-      >
+      <div className={styles.page}>
         <main className={styles.main}>
           <div className={styles.header}>
             <Link href="/" className={styles.backLink}>
@@ -155,6 +136,8 @@ export default function ProductsPage() {
 
           {loading ? (
             <p className={styles.empty}>Carregando produtos…</p>
+          ) : error ? (
+            <p className={styles.empty}>{error}</p>
           ) : products.length === 0 ? (
             <p className={styles.empty}>Nenhum produto encontrado.</p>
           ) : (

@@ -1,34 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Geist, Geist_Mono } from "next/font/google";
 import type { Product } from "../../lib/store";
+import { formatPrice, formatDate } from "../../lib/formatters";
 import styles from "@/styles/ProductDetail.module.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-function formatPrice(value: number): string {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "EUR" });
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 export default function ProductDetailPage() {
   const router = useRouter();
@@ -41,30 +17,32 @@ export default function ProductDetailPage() {
   const [deleting, setDeleting] = useState(false);
   const [toggling, setToggling] = useState(false);
 
-  const fetchProduct = async (showRefreshing = false) => {
-    if (!id) return;
-    if (showRefreshing) setRefreshing(true);
-    else setLoading(true);
-    try {
-      const res = await fetch(`/api/products/${id}`);
-      if (res.status === 404) {
-        setNotFound(true);
-        setProduct(null);
-      } else {
-        const data: Product = await res.json();
-        setProduct(data);
-        setNotFound(false);
+  const fetchProduct = useCallback(
+    async (showRefreshing = false) => {
+      if (!id) return;
+      if (showRefreshing) setRefreshing(true);
+      else setLoading(true);
+      try {
+        const res = await fetch(`/api/products/${id}`);
+        if (res.status === 404) {
+          setNotFound(true);
+          setProduct(null);
+        } else {
+          const data: Product = await res.json();
+          setProduct(data);
+          setNotFound(false);
+        }
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
       }
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
+    },
+    [id],
+  );
 
   useEffect(() => {
     if (id) fetchProduct();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, fetchProduct]);
 
   const handleDelete = async () => {
     if (!id) return;
@@ -106,9 +84,7 @@ export default function ProductDetailPage() {
         <link rel="icon" href="/api.png" />
       </Head>
 
-      <div
-        className={`${styles.page} ${geistSans.variable} ${geistMono.variable}`}
-      >
+      <div className={styles.page}>
         <main className={styles.main}>
           {/* Header */}
           <div className={styles.header}>
@@ -222,7 +198,7 @@ export default function ProductDetailPage() {
                   <div className={styles.row}>
                     <span className={styles.label}>Criado em</span>
                     <span className={styles.value}>
-                      {formatDate(product.createdAt)}
+                      {formatDate(product.createdAt, true)}
                     </span>
                   </div>
                   <div className={styles.row}>
