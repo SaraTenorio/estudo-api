@@ -7,10 +7,10 @@ type ErrorResponse = { error: string };
 const ALLOWED_METHODS = "GET, PUT, PATCH, DELETE";
 
 /**
- * GET    /api/products/:id  → retorna um produto pelo id
- * PUT    /api/products/:id  → substitui o produto completo
- * PATCH  /api/products/:id  → atualiza campos parcialmente
- * DELETE /api/products/:id  → remove o produto
+ * GET    /api/products/id  → retorna um produto pelo id
+ * PUT    /api/products/id  → substitui o produto completo
+ * PATCH  /api/products/id  → atualiza campos parcialmente
+ * DELETE /api/products/id  → remove o produto
  */
 export default function handler(
   req: NextApiRequest,

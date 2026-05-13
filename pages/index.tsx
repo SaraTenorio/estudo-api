@@ -44,7 +44,7 @@ const endpointGroups = [
   },
   {
     title: "Produto individual",
-    resource: "/api/products/:id",
+    resource: "/api/products/id",
     endpoints: [
       {
         method: "GET",

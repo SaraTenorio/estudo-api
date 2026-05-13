@@ -51,7 +51,7 @@ pages/
     hello.ts             ← Rota de exemplo do Next.js
     products/
       index.ts           ← GET /api/products · POST /api/products
-      [id].ts            ← GET · PUT · PATCH · DELETE /api/products/:id
+      [id].ts            ← GET · PUT · PATCH · DELETE /api/products/id
       random.ts          ← POST /api/products/random
       reset.ts           ← POST /api/products/reset
 ```
@@ -81,7 +81,7 @@ pages/
 | `GET`  | Lista todos os produtos |
 | `POST` | Cria um novo produto    |
 
-### Produto individual — `/api/products/:id`
+### Produto individual — `/api/products/id`
 
 | Método   | Descrição                    |
 | -------- | ---------------------------- |
@@ -119,7 +119,7 @@ pages/
 }
 ```
 
-### PUT `/api/products/:id`
+### PUT `/api/products/id`
 
 ```json
 {
@@ -132,7 +132,7 @@ pages/
 }
 ```
 
-### PATCH `/api/products/:id` — apenas os campos a alterar
+### PATCH `/api/products/id` — apenas os campos a alterar
 
 ```json
 {
