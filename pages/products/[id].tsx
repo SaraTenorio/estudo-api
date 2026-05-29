@@ -113,7 +113,7 @@ export default function ProductDetailPage() {
                 disabled={refreshing || loading}
                 title={t("refreshTitle")}
               >
-                â†»
+                ↻
               </button>
             </div>
           </div>
@@ -197,7 +197,7 @@ export default function ProductDetailPage() {
                         className={`${styles.toggleLabel} ${product.active ? styles.toggleLabelOn : styles.toggleLabelOff}`}
                       >
                         {toggling
-                          ? "â€¦"
+                          ? "…"
                           : product.active
                             ? t("active")
                             : t("inactive")}
