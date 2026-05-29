@@ -52,6 +52,9 @@ lib/
   store.ts               ← Store em memória + makeRandomProduct (partilhado)
   product-validation.ts  ← Validação de campos do produto
   with-json-body.ts      ← Middleware: guarda body nulo/não-objeto
+  with-api-key.ts        ← Middleware: valida o header X-API-Key (GET)
+  with-auth.ts           ← Middleware: valida Bearer JWT (escritas)
+  with-security.ts       ← Middleware: redireciona GET → API Key, escritas → JWT
 pages/
   index.tsx              ← Página de documentação da API
   products.tsx           ← Página de visualização em cards
@@ -60,13 +63,73 @@ pages/
   sitemap.xml.tsx        ← GET /sitemap.xml — Sitemap XML dinâmico
   feed.xml.tsx           ← GET /feed.xml — RSS Feed dos produtos
   api/
-    hello.ts             ← Rota de exemplo do Next.js
+    auth/
+      login.ts           ← POST /api/auth/login — devolve token JWT
     products/
       index.ts           ← GET /api/products · POST /api/products
       [id].ts            ← GET · PUT · PATCH · DELETE /api/products/id
       random.ts          ← POST /api/products/random
       reset.ts           ← POST /api/products/reset
 ```
+
+---
+
+## Autenticação
+
+Todos os endpoints da API estão protegidos. A credencial exigida depende do método HTTP:
+
+| Método                              | Credencial | Header                          |
+| ----------------------------------- | ---------- | ------------------------------- |
+| `GET`                               | API Key    | `X-API-Key: <chave>`            |
+| `POST` · `PUT` · `PATCH` · `DELETE` | Bearer JWT | `Authorization: Bearer <token>` |
+
+### Configurar variáveis de ambiente
+
+Copiar `.env.local.example` para `.env.local` e preencher os valores:
+
+```bash
+cp .env.local.example .env.local
+```
+
+| Variável        | Descrição                                                               |
+| --------------- | ----------------------------------------------------------------------- |
+| `API_KEY`       | Chave para pedidos de leitura (GET)                                     |
+| `JWT_SECRET`    | Segredo para assinar e verificar tokens (usar string longa e aleatória) |
+| `AUTH_USERNAME` | Username de login                                                       |
+| `AUTH_PASSWORD` | Password de login                                                       |
+
+### Obter um token JWT
+
+Enviar um `POST` para `/api/auth/login` antes de qualquer operação de escrita:
+
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "a-tua-password"
+}
+```
+
+Resposta (`200 OK`):
+
+```json
+{ "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }
+```
+
+O token é válido durante **1 hora**. Inclui-o em todos os pedidos de escrita:
+
+```http
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+### Erros de autenticação
+
+| Status                      | Situação                                               |
+| --------------------------- | ------------------------------------------------------ |
+| `401 Unauthorized`          | API key ou token em falta ou inválido                  |
+| `500 Internal Server Error` | Variáveis de ambiente de autenticação não configuradas |
 
 ---
 
@@ -85,6 +148,14 @@ pages/
 ---
 
 ## Endpoints
+
+> **Autenticação obrigatória em todos os endpoints.** Consulta a secção [Autenticação](#autenticação) para mais detalhes.
+
+### Autenticação — `/api/auth/login`
+
+| Método | Descrição                                           |
+| ------ | --------------------------------------------------- |
+| `POST` | Obter um token JWT (body: `{ username, password }`) |
 
 ### Coleção — `/api/products`
 
@@ -193,11 +264,12 @@ Aplicado automaticamente em todas as rotas com body (POST, PUT, PATCH). Rejeita 
 
 ### Respostas de erro
 
-| Situação                   | Status                                        |
-| -------------------------- | --------------------------------------------- |
-| Campo inválido ou em falta | `400 Bad Request`                             |
-| Produto não encontrado     | `404 Not Found`                               |
-| Método não suportado       | `405 Method Not Allowed` (com header `Allow`) |
+| Situação                          | Status                                        |
+| --------------------------------- | --------------------------------------------- |
+| Credenciais em falta ou inválidas | `401 Unauthorized`                            |
+| Campo inválido ou em falta        | `400 Bad Request`                             |
+| Produto não encontrado            | `404 Not Found`                               |
+| Método não suportado              | `405 Method Not Allowed` (com header `Allow`) |
 
 ---
 

@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { store, makeRandomProduct } from "../../../lib/store";
 import type { Product } from "../../../lib/store";
+import { withSecurity } from "../../../lib/with-security";
 import { MSG } from "../../../lib/messages";
 
 type ErrorResponse = { error: string };
@@ -9,7 +10,7 @@ type ErrorResponse = { error: string };
  * POST /api/products/random
  * Cria um produto com dados aleatórios — nenhum body necessário.
  */
-export default function handler(
+function handler(
   req: NextApiRequest,
   res: NextApiResponse<Product | ErrorResponse>,
 ) {
@@ -22,3 +23,5 @@ export default function handler(
   store.products.push(newProduct);
   return res.status(201).json(newProduct);
 }
+
+export default withSecurity(handler);

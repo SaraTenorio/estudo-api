@@ -72,6 +72,11 @@ export const translations = {
     activate: "activate",
     metadata: "Metadata",
     labelCreatedAtIso: "createdAt (ISO)",
+    // auth
+    groupAuth: "Authentication",
+    descLogin: "Obtain a JWT token — body: { username, password }",
+    authHint:
+      "All endpoints require authentication. GET requests need an API key (X-API-Key header); write operations (POST, PUT, PATCH, DELETE) need a Bearer JWT obtained from /api/auth/login.",
   },
   pt: {
     // meta
@@ -145,6 +150,11 @@ export const translations = {
     activate: "ativar",
     metadata: "Metadados",
     labelCreatedAtIso: "createdAt (ISO)",
+    // auth
+    groupAuth: "Autenticação",
+    descLogin: "Obter um token JWT — body: { username, password }",
+    authHint:
+      "Todos os endpoints requerem autenticação. Pedidos GET precisam de uma API key (header X-API-Key); operações de escrita (POST, PUT, PATCH, DELETE) precisam de um Bearer JWT obtido em /api/auth/login.",
   },
 } as const;
 

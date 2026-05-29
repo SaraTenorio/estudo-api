@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { store, makeRandomProduct } from "../../../lib/store";
+import { withSecurity } from "../../../lib/with-security";
 import { MSG } from "../../../lib/messages";
 
 type SuccessResponse = { message: string };
@@ -8,7 +9,7 @@ type ErrorResponse = { error: string };
 /**
  * POST /api/products/reset → restaura o store com 2 produtos aleatórios
  */
-export default function handler(
+function handler(
   req: NextApiRequest,
   res: NextApiResponse<SuccessResponse | ErrorResponse>,
 ) {
@@ -22,3 +23,5 @@ export default function handler(
 
   return res.status(200).json({ message: MSG.STORE_RESET });
 }
+
+export default withSecurity(handler);

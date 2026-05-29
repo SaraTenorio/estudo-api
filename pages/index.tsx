@@ -46,6 +46,21 @@ export default function Home() {
 
   const endpointGroups = [
     {
+      title: t("groupAuth"),
+      resource: "/api/auth/login",
+      endpoints: [
+        {
+          method: "POST",
+          description: t("descLogin"),
+          body: JSON.stringify(
+            { username: "admin", password: "your-password" },
+            null,
+            2,
+          ),
+        },
+      ],
+    },
+    {
       title: t("groupCollection"),
       resource: "/api/products",
       endpoints: [
@@ -153,6 +168,9 @@ export default function Home() {
             </p>
             <p style={{ fontSize: 13, color: "#8b949e", margin: "8px 0 4px" }}>
               {t("callsHint")}
+            </p>
+            <p style={{ fontSize: 13, color: "#d29922", margin: "4px 0" }}>
+              🔒 {t("authHint")}
             </p>
             <div className={styles.navRow}>
               <Link
