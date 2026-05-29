@@ -3,34 +3,34 @@ import { test, expect } from "@playwright/test";
 test.beforeEach(async ({ request, page }) => {
   await request.post("/api/products/reset");
   await page.goto("/products");
-  // Aguardar que os cartões carreguem
+  // Wait for product cards to load
   await expect(page.getByRole("heading", { level: 2 }).first()).toBeVisible();
 });
 
 // ---------------------------------------------------------------------------
-// Conteúdo da página
+// Page content
 // ---------------------------------------------------------------------------
-test("tem o título correto e o heading Produtos", async ({ page }) => {
+test("has the correct title and Produtos heading", async ({ page }) => {
   await expect(page).toHaveTitle(/Produtos/);
   await expect(page.getByRole("heading", { name: "Produtos" })).toBeVisible();
 });
 
-test("exibe 2 cartões de produto após reset", async ({ page }) => {
+test("shows 2 product cards after reset", async ({ page }) => {
   const cards = page.getByRole("heading", { level: 2 });
 
   await expect(cards).toHaveCount(2);
 });
 
-test("cada cartão tem o link Ver detalhes →", async ({ page }) => {
+test("each card has the Ver detalhes → link", async ({ page }) => {
   const links = page.getByRole("link", { name: "Ver detalhes →" });
 
   await expect(links).toHaveCount(2);
 });
 
 // ---------------------------------------------------------------------------
-// Ação: adicionar produto aleatório
+// Action: add random product
 // ---------------------------------------------------------------------------
-test("botão '+ Produto aleatório' adiciona um cartão e mostra toast", async ({
+test("'+ Produto aleatório' button adds a card and shows a toast", async ({
   page,
 }) => {
   await page.getByRole("button", { name: /Produto aleatório/ }).click();
@@ -40,12 +40,12 @@ test("botão '+ Produto aleatório' adiciona um cartão e mostra toast", async (
 });
 
 // ---------------------------------------------------------------------------
-// Ação: resetar store
+// Action: reset store
 // ---------------------------------------------------------------------------
-test("botão 'Resetar store' repõe 2 produtos e mostra toast", async ({
+test("'Resetar store' button resets to 2 products and shows a toast", async ({
   page,
 }) => {
-  // Adicionar um extra para o reset ser visível
+  // Add an extra product to make the reset visible
   await page.getByRole("button", { name: /Produto aleatório/ }).click();
   await expect(page.getByRole("heading", { level: 2 })).toHaveCount(3);
 
@@ -56,9 +56,11 @@ test("botão 'Resetar store' repõe 2 produtos e mostra toast", async ({
 });
 
 // ---------------------------------------------------------------------------
-// Ação: eliminar produto
+// Action: delete product
 // ---------------------------------------------------------------------------
-test("botão 🗑 elimina o produto e mostra toast", async ({ page }) => {
+test("delete button removes the product and shows a toast", async ({
+  page,
+}) => {
   const deleteButtons = page.getByTitle("Remover produto");
 
   await deleteButtons.first().click();
@@ -68,9 +70,9 @@ test("botão 🗑 elimina o produto e mostra toast", async ({ page }) => {
 });
 
 // ---------------------------------------------------------------------------
-// Navegação para detalhes
+// Navigation
 // ---------------------------------------------------------------------------
-test("link 'Ver detalhes →' navega para a página de detalhe", async ({
+test("'Ver detalhes →' link navigates to the product detail page", async ({
   page,
 }) => {
   await page.getByRole("link", { name: "Ver detalhes →" }).first().click();

@@ -14,9 +14,9 @@ test.beforeEach(async ({ request, page }) => {
 });
 
 // ---------------------------------------------------------------------------
-// Conteúdo da página
+// Page content
 // ---------------------------------------------------------------------------
-test("exibe o nome do produto no título e no h1", async ({ page }) => {
+test("shows the product name in the title and h1", async ({ page }) => {
   await expect(page).toHaveTitle(
     new RegExp(product.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
   );
@@ -25,34 +25,34 @@ test("exibe o nome do produto no título e no h1", async ({ page }) => {
   );
 });
 
-test("exibe o badge de estado (Ativo ou Inativo)", async ({ page }) => {
+test("shows the status badge (Ativo or Inativo)", async ({ page }) => {
   const expectedBadge = product.active ? "Ativo" : "Inativo";
 
   await expect(page.getByText(expectedBadge).first()).toBeVisible();
 });
 
-test("exibe as secções Identificação e Inventário", async ({ page }) => {
+test("shows the Identificação and Inventário sections", async ({ page }) => {
   await expect(page.getByText("Identificação")).toBeVisible();
   await expect(page.getByText("Inventário")).toBeVisible();
 });
 
 // ---------------------------------------------------------------------------
-// Ação: toggle de estado ativo
+// Action: toggle active state
 // ---------------------------------------------------------------------------
-test("toggle de estado ativo inverte o badge", async ({ page }) => {
+test("active state toggle inverts the badge", async ({ page }) => {
   const initialState = product.active;
   const expectedBadgeAfter = initialState ? "Inativo" : "Ativo";
 
-  // O input[checkbox] está visualmente oculto pelo toggle custom — clicar no label wrapper
+  // The input[checkbox] is visually hidden by the custom toggle — click the label wrapper
   await page.getByTitle(/Clique para/).click();
 
   await expect(page.getByText(expectedBadgeAfter).first()).toBeVisible();
 });
 
 // ---------------------------------------------------------------------------
-// Ação: eliminar produto
+// Action: delete product
 // ---------------------------------------------------------------------------
-test("botão 🗑 Remover elimina o produto e redireciona para /products", async ({
+test("Remover button deletes the product and redirects to /products", async ({
   page,
 }) => {
   await page.getByRole("button", { name: /Remover/ }).click();
@@ -61,9 +61,9 @@ test("botão 🗑 Remover elimina o produto e redireciona para /products", async
 });
 
 // ---------------------------------------------------------------------------
-// Estado 404
+// 404 state
 // ---------------------------------------------------------------------------
-test("exibe mensagem 404 para produto inexistente", async ({ page }) => {
+test("shows a 404 message for a non-existent product", async ({ page }) => {
   await page.goto("/products/99999");
 
   await expect(page.getByText("404")).toBeVisible();

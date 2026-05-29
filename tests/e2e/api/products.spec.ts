@@ -11,7 +11,7 @@ test.beforeEach(async ({ request }) => {
 // GET /api/products
 // ---------------------------------------------------------------------------
 test.describe("GET /api/products", () => {
-  test("retorna 200 com um array de produtos", async ({ request }) => {
+  test("returns 200 with an array of products", async ({ request }) => {
     const res = await request.get(BASE);
 
     expect(res.status()).toBe(200);
@@ -19,15 +19,13 @@ test.describe("GET /api/products", () => {
     expect(Array.isArray(body)).toBe(true);
   });
 
-  test("inclui o header X-Total-Count", async ({ request }) => {
+  test("includes the X-Total-Count header", async ({ request }) => {
     const res = await request.get(BASE);
 
     expect(res.headers()["x-total-count"]).toBeDefined();
   });
 
-  test("X-Total-Count corresponde ao número de produtos", async ({
-    request,
-  }) => {
+  test("X-Total-Count matches the number of products", async ({ request }) => {
     const res = await request.get(BASE);
     const body = await res.json();
 
@@ -39,25 +37,25 @@ test.describe("GET /api/products", () => {
 // POST /api/products
 // ---------------------------------------------------------------------------
 test.describe("POST /api/products", () => {
-  test("cria um produto e retorna 201 com o produto criado", async ({
+  test("creates a product and returns 201 with the created product", async ({
     request,
   }) => {
     const res = await request.post(BASE, {
-      data: { name: "Produto de Teste", price: 9.99, quantity: 3 },
+      data: { name: "Test Product", price: 9.99, quantity: 3 },
     });
 
     expect(res.status()).toBe(201);
     const body = await res.json();
     expect(body.id).toBeDefined();
-    expect(body.name).toBe("Produto de Teste");
+    expect(body.name).toBe("Test Product");
     expect(body.price).toBe(9.99);
     expect(body.quantity).toBe(3);
     expect(body.active).toBe(true);
   });
 
-  test("aplica defaults para campos omitidos", async ({ request }) => {
+  test("applies defaults for omitted fields", async ({ request }) => {
     const res = await request.post(BASE, {
-      data: { name: "Só Nome" },
+      data: { name: "Name Only" },
     });
 
     expect(res.status()).toBe(201);
@@ -69,7 +67,7 @@ test.describe("POST /api/products", () => {
     expect(body.createdAt).toBeDefined();
   });
 
-  test("retorna 400 quando name está ausente", async ({ request }) => {
+  test("returns 400 when name is missing", async ({ request }) => {
     const res = await request.post(BASE, {
       data: { price: 10 },
     });
@@ -79,9 +77,7 @@ test.describe("POST /api/products", () => {
     expect(body.error).toBe(MSG.NAME_REQUIRED);
   });
 
-  test("retorna 400 quando name é só espaços em branco", async ({
-    request,
-  }) => {
+  test("returns 400 when name is whitespace-only", async ({ request }) => {
     const res = await request.post(BASE, {
       data: { name: "   " },
     });
@@ -91,26 +87,26 @@ test.describe("POST /api/products", () => {
     expect(body.error).toBe(MSG.NAME_BLANK);
   });
 
-  test("retorna 400 para campo desconhecido", async ({ request }) => {
+  test("returns 400 for unknown field", async ({ request }) => {
     const res = await request.post(BASE, {
-      data: { name: "X", campoInvalido: true },
+      data: { name: "X", unknownField: true },
     });
 
     expect(res.status()).toBe(400);
     const body = await res.json();
-    expect(body.error).toBe(MSG.UNKNOWN_FIELD("campoInvalido"));
+    expect(body.error).toBe(MSG.UNKNOWN_FIELD("unknownField"));
   });
 
-  // NOTA: No Next.js 16 (Pages Router) o body parser inicializa req.body a {}
-  // antes do withJsonBody ser invocado. Arrays e null são normalizados para {},
-  // tornando os guards Array.isArray e body===null inalcançáveis via HTTP.
-  // O caminho com BODY_INVALID só é exercitável em testes unitários ao middleware.
-  test.skip("retorna 400 quando o body é um array JSON (não objeto) [Next.js 16 normaliza para {}]", async ({
+  // NOTE: In Next.js 16 (Pages Router) the body parser initialises req.body to {}
+  // before withJsonBody is invoked. Arrays and null are normalised to {},
+  // making the Array.isArray and body===null guards unreachable via HTTP.
+  // The BODY_INVALID path can only be exercised in unit tests of the middleware.
+  test.skip("returns 400 when body is a JSON array (not an object) [Next.js 16 normalises to {}]", async ({
     request,
   }) => {
     const res = await request.post(BASE, {
       headers: { "Content-Type": "application/json" },
-      body: "[1, 2, 3]",
+      data: "[1, 2, 3]",
     });
 
     expect(res.status()).toBe(400);
@@ -118,14 +114,14 @@ test.describe("POST /api/products", () => {
     expect(body.error).toBe(MSG.BODY_INVALID);
   });
 
-  test("POST sem Content-Type retorna 400 (body fica {} e falha na validação)", async ({
+  test("POST without Content-Type returns 400 (body becomes {} and fails validation)", async ({
     request,
   }) => {
-    // Sem Content-Type o body parser não processa o body → req.body = {}
-    // withJsonBody deixa passar (é objeto não-nulo) → validação falha com NAME_REQUIRED
+    // Without Content-Type the body parser does not process the body → req.body = {}
+    // withJsonBody lets it through (non-null object) → validation fails with NAME_REQUIRED
     const res = await request.post(BASE, {
       headers: { "Content-Type": "text/plain" },
-      body: "dado inválido",
+      data: "invalid data",
     });
 
     expect(res.status()).toBe(400);
@@ -133,7 +129,7 @@ test.describe("POST /api/products", () => {
     expect(typeof body.error).toBe("string");
   });
 
-  test("retorna 405 para método DELETE na coleção", async ({ request }) => {
+  test("returns 405 for DELETE method on collection", async ({ request }) => {
     const res = await request.delete(BASE);
 
     expect(res.status()).toBe(405);
@@ -146,7 +142,7 @@ test.describe("POST /api/products", () => {
 // GET /api/products/:id
 // ---------------------------------------------------------------------------
 test.describe("GET /api/products/:id", () => {
-  test("retorna o produto pelo id", async ({ request }) => {
+  test("returns the product by id", async ({ request }) => {
     const list = await (await request.get(BASE)).json();
     const first = list[0];
 
@@ -158,7 +154,7 @@ test.describe("GET /api/products/:id", () => {
     expect(body.name).toBe(first.name);
   });
 
-  test("retorna 404 para id inexistente", async ({ request }) => {
+  test("returns 404 for non-existent id", async ({ request }) => {
     const res = await request.get(`${BASE}/99999`);
 
     expect(res.status()).toBe(404);
@@ -166,7 +162,7 @@ test.describe("GET /api/products/:id", () => {
     expect(body.error).toBe(MSG.PRODUCT_NOT_FOUND(99999));
   });
 
-  test("retorna 400 para id inválido (não numérico)", async ({ request }) => {
+  test("returns 400 for invalid id (non-numeric)", async ({ request }) => {
     const res = await request.get(`${BASE}/abc`);
 
     expect(res.status()).toBe(400);
@@ -179,23 +175,23 @@ test.describe("GET /api/products/:id", () => {
 // PUT /api/products/:id
 // ---------------------------------------------------------------------------
 test.describe("PUT /api/products/:id", () => {
-  test("substitui o produto completo e retorna 200", async ({ request }) => {
+  test("replaces the full product and returns 200", async ({ request }) => {
     const list = await (await request.get(BASE)).json();
     const { id } = list[0];
 
     const res = await request.put(`${BASE}/${id}`, {
-      data: { name: "Produto Substituído", price: 1.5 },
+      data: { name: "Replaced Product", price: 1.5 },
     });
 
     expect(res.status()).toBe(200);
     const body = await res.json();
-    expect(body.name).toBe("Produto Substituído");
+    expect(body.name).toBe("Replaced Product");
     expect(body.price).toBe(1.5);
-    expect(body.description).toBe(""); // campo omitido volta ao default
+    expect(body.description).toBe(""); // omitted field falls back to default
     expect(body.id).toBe(id);
   });
 
-  test("retorna 400 quando name está ausente no PUT", async ({ request }) => {
+  test("returns 400 when name is missing on PUT", async ({ request }) => {
     const list = await (await request.get(BASE)).json();
     const { id } = list[0];
 
@@ -208,7 +204,7 @@ test.describe("PUT /api/products/:id", () => {
     expect(body.error).toBe(MSG.NAME_REQUIRED);
   });
 
-  test("retorna 404 para id inexistente", async ({ request }) => {
+  test("returns 404 for non-existent id", async ({ request }) => {
     const res = await request.put(`${BASE}/99999`, {
       data: { name: "X" },
     });
@@ -221,7 +217,7 @@ test.describe("PUT /api/products/:id", () => {
 // PATCH /api/products/:id
 // ---------------------------------------------------------------------------
 test.describe("PATCH /api/products/:id", () => {
-  test("atualiza parcialmente o produto e mantém os restantes campos", async ({
+  test("partially updates the product and preserves other fields", async ({
     request,
   }) => {
     const list = await (await request.get(BASE)).json();
@@ -234,10 +230,10 @@ test.describe("PATCH /api/products/:id", () => {
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.price).toBe(42.5);
-    expect(body.name).toBe(first.name); // campo não enviado mantém-se
+    expect(body.name).toBe(first.name); // unsent field is preserved
   });
 
-  test("inverte o campo active", async ({ request }) => {
+  test("toggles the active field", async ({ request }) => {
     const list = await (await request.get(BASE)).json();
     const first = list[0];
 
@@ -250,12 +246,12 @@ test.describe("PATCH /api/products/:id", () => {
     expect(body.active).toBe(!first.active);
   });
 
-  test("retorna 400 para campo desconhecido", async ({ request }) => {
+  test("returns 400 for unknown field", async ({ request }) => {
     const list = await (await request.get(BASE)).json();
     const { id } = list[0];
 
     const res = await request.patch(`${BASE}/${id}`, {
-      data: { campoInvalido: "x" },
+      data: { unknownField: "x" },
     });
 
     expect(res.status()).toBe(400);
@@ -266,7 +262,7 @@ test.describe("PATCH /api/products/:id", () => {
 // DELETE /api/products/:id
 // ---------------------------------------------------------------------------
 test.describe("DELETE /api/products/:id", () => {
-  test("remove o produto e retorna o produto eliminado", async ({
+  test("deletes the product and returns the deleted product", async ({
     request,
   }) => {
     const list = await (await request.get(BASE)).json();
@@ -279,7 +275,7 @@ test.describe("DELETE /api/products/:id", () => {
     expect(body.id).toBe(id);
   });
 
-  test("o produto já não existe após DELETE", async ({ request }) => {
+  test("product no longer exists after DELETE", async ({ request }) => {
     const list = await (await request.get(BASE)).json();
     const { id } = list[0];
 
@@ -289,7 +285,7 @@ test.describe("DELETE /api/products/:id", () => {
     expect(check.status()).toBe(404);
   });
 
-  test("retorna 404 para id inexistente", async ({ request }) => {
+  test("returns 404 for non-existent id", async ({ request }) => {
     const res = await request.delete(`${BASE}/99999`);
 
     expect(res.status()).toBe(404);
@@ -300,7 +296,7 @@ test.describe("DELETE /api/products/:id", () => {
 // POST /api/products/random
 // ---------------------------------------------------------------------------
 test.describe("POST /api/products/random", () => {
-  test("cria um produto aleatório e retorna 201", async ({ request }) => {
+  test("creates a random product and returns 201", async ({ request }) => {
     const res = await request.post(`${BASE}/random`);
 
     expect(res.status()).toBe(201);
@@ -312,10 +308,10 @@ test.describe("POST /api/products/random", () => {
     expect(typeof body.active).toBe("boolean");
   });
 
-  test("retorna 405 para GET em /random", async ({ request }) => {
+  test("returns 405 for GET on /random", async ({ request }) => {
     const res = await request.get(`${BASE}/random`);
 
-    // random é um ficheiro de rota mas o método não é permitido
+    // /random is a route file but the method is not allowed
     expect(res.status()).toBe(405);
   });
 });
@@ -324,8 +320,8 @@ test.describe("POST /api/products/random", () => {
 // POST /api/products/reset
 // ---------------------------------------------------------------------------
 test.describe("POST /api/products/reset", () => {
-  test("repõe o store com exatamente 2 produtos", async ({ request }) => {
-    // Adicionar um extra para garantir que o reset limpa o estado
+  test("resets the store to exactly 2 products", async ({ request }) => {
+    // Add extra products to ensure the reset clears state
     await request.post(`${BASE}/random`);
     await request.post(`${BASE}/random`);
 
@@ -336,7 +332,7 @@ test.describe("POST /api/products/reset", () => {
     expect(after).toHaveLength(2);
   });
 
-  test("retorna 405 para GET em /reset", async ({ request }) => {
+  test("returns 405 for GET on /reset", async ({ request }) => {
     const res = await request.get(`${BASE}/reset`);
 
     expect(res.status()).toBe(405);

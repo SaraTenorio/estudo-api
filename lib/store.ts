@@ -9,23 +9,23 @@ export interface Product {
 }
 
 const NAMES = [
-  "Teclado Mecânico",
-  "Monitor Ultrawide",
-  "Headset RGB",
-  "Mouse Gamer",
-  "Webcam 4K",
-  "SSD NVMe",
-  "Hub USB-C",
-  "Cadeira Ergonômica",
-  "Microfone Condensador",
-  "Placa de Vídeo",
+  "Mechanical Keyboard",
+  "Ultrawide Monitor",
+  "RGB Headset",
+  "Gaming Mouse",
+  "4K Webcam",
+  "NVMe SSD",
+  "USB-C Hub",
+  "Ergonomic Chair",
+  "Condenser Microphone",
+  "Graphics Card",
 ];
 
 const DESCRIPTIONS = [
-  "Edição limitada com acabamento premium.",
-  "Alta performance para uso diário.",
-  "Design compacto e portátil.",
-  "Com garantia de 2 anos.",
+  "Limited edition with premium finish.",
+  "High performance for everyday use.",
+  "Compact and portable design.",
+  "Comes with a 2-year warranty.",
   "",
 ];
 
@@ -33,7 +33,7 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-/** Gera os dados de um produto aleatório dado um id. */
+/** Generates random product data for the given id. */
 export function makeRandomProduct(id: number): Product {
   const suffix = Math.floor(Math.random() * 900 + 100);
   return {

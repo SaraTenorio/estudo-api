@@ -47,8 +47,8 @@ Abre o browser nas seguintes páginas:
 ```
 lib/
   store.ts               ← Store em memória + makeRandomProduct (partilhado)
-  product-validation.ts  ← Validação de campos do produto (fases 1–3)
-  with-json-body.ts      ← Middleware: guarda body nulo/não-objeto (fase 4)
+  product-validation.ts  ← Validação de campos do produto
+  with-json-body.ts      ← Middleware: guarda body nulo/não-objeto
 pages/
   index.tsx              ← Página de documentação da API
   products.tsx           ← Página de visualização em cards
