@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { store, makeRandomProduct } from "../../../lib/store";
+import { MSG } from "../../../lib/messages";
 
 type SuccessResponse = { message: string };
 type ErrorResponse = { error: string };
@@ -13,11 +14,11 @@ export default function handler(
 ) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
-    return res.status(405).json({ error: "Método não permitido" });
+    return res.status(405).json({ error: MSG.METHOD_NOT_ALLOWED(req.method) });
   }
 
   store.products = [makeRandomProduct(1), makeRandomProduct(2)];
   store.nextId = 3;
 
-  return res.status(200).json({ message: "Store resetado com sucesso" });
+  return res.status(200).json({ message: MSG.STORE_RESET });
 }

@@ -3,6 +3,7 @@ import { store } from "../../../lib/store";
 import type { Product } from "../../../lib/store";
 import { validateProductBody } from "../../../lib/product-validation";
 import { withJsonBody } from "../../../lib/with-json-body";
+import { MSG } from "../../../lib/messages";
 
 type ErrorResponse = { error: string };
 
@@ -21,15 +22,13 @@ function handler(
   const id = Number(req.query.id);
 
   if (isNaN(id)) {
-    return res.status(400).json({ error: "ID inválido" });
+    return res.status(400).json({ error: MSG.ID_INVALID });
   }
 
   const index = store.products.findIndex((product) => product.id === id);
 
   if (index === -1) {
-    return res
-      .status(404)
-      .json({ error: `Produto com id ${id} não encontrado` });
+    return res.status(404).json({ error: MSG.PRODUCT_NOT_FOUND(id) });
   }
 
   if (req.method === "GET") {
@@ -76,7 +75,7 @@ function handler(
   }
 
   res.setHeader("Allow", ALLOWED_METHODS);
-  return res.status(405).json({ error: `Método ${req.method} não permitido` });
+  return res.status(405).json({ error: MSG.METHOD_NOT_ALLOWED(req.method) });
 }
 
 export default withJsonBody(handler);

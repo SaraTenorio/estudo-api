@@ -1,4 +1,5 @@
 import type { Product } from "./store";
+import { MSG } from "./messages";
 
 const ALLOWED_KEYS = new Set<string>([
   "name",
@@ -24,7 +25,7 @@ export function validateProductBody(
 ): string | null {
   for (const key of Object.keys(body)) {
     if (!ALLOWED_KEYS.has(key)) {
-      return `Campo desconhecido: "${key}"`;
+      return MSG.UNKNOWN_FIELD(key);
     }
   }
 
@@ -32,35 +33,35 @@ export function validateProductBody(
 
   if (requireName) {
     if (!name || typeof name !== "string") {
-      return 'O campo "name" é obrigatório';
+      return MSG.NAME_REQUIRED;
     }
     if (!name.trim()) {
-      return '"name" não pode estar vazio ou só conter espaços';
+      return MSG.NAME_BLANK;
     }
   } else if (name !== undefined) {
-    if (typeof name !== "string") return '"name" deve ser uma string';
-    if (!name.trim()) return '"name" não pode estar vazio ou só conter espaços';
+    if (typeof name !== "string") return MSG.NAME_MUST_BE_STRING;
+    if (!name.trim()) return MSG.NAME_BLANK;
   }
 
   if (description !== undefined && typeof description !== "string") {
-    return '"description" deve ser uma string';
+    return MSG.DESCRIPTION_MUST_BE_STRING;
   }
 
   if (price !== undefined) {
-    if (typeof price !== "number") return '"price" deve ser um número decimal';
-    if (price < 0) return '"price" não pode ser negativo';
+    if (typeof price !== "number") return MSG.PRICE_MUST_BE_NUMBER;
+    if (price < 0) return MSG.PRICE_NEGATIVE;
   }
 
   if (quantity !== undefined && (!Number.isInteger(quantity) || quantity < 0)) {
-    return '"quantity" deve ser um inteiro não negativo';
+    return MSG.QUANTITY_INVALID;
   }
 
   if (active !== undefined && typeof active !== "boolean") {
-    return '"active" deve ser um booleano (true ou false)';
+    return MSG.ACTIVE_MUST_BE_BOOLEAN;
   }
 
   if (createdAt !== undefined && !ISO_8601_UTC.test(createdAt)) {
-    return '"createdAt" deve ser uma data ISO 8601 UTC (ex: 2026-05-12T10:00:00.000Z)';
+    return MSG.CREATED_AT_INVALID;
   }
 
   return null;

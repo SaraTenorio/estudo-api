@@ -3,6 +3,7 @@ import { store } from "../../../lib/store";
 import type { Product } from "../../../lib/store";
 import { validateProductBody } from "../../../lib/product-validation";
 import { withJsonBody } from "../../../lib/with-json-body";
+import { MSG } from "../../../lib/messages";
 
 type ErrorResponse = { error: string };
 
@@ -45,7 +46,7 @@ function handler(
   }
 
   res.setHeader("Allow", ALLOWED_METHODS);
-  return res.status(405).json({ error: `Método ${req.method} não permitido` });
+  return res.status(405).json({ error: MSG.METHOD_NOT_ALLOWED(req.method) });
 }
 
 export default withJsonBody(handler);

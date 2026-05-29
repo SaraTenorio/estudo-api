@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { store, makeRandomProduct } from "../../../lib/store";
 import type { Product } from "../../../lib/store";
+import { MSG } from "../../../lib/messages";
 
 type ErrorResponse = { error: string };
 
@@ -14,9 +15,7 @@ export default function handler(
 ) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
-    return res
-      .status(405)
-      .json({ error: `Método ${req.method} não permitido` });
+    return res.status(405).json({ error: MSG.METHOD_NOT_ALLOWED(req.method) });
   }
 
   const newProduct = makeRandomProduct(store.nextId++);

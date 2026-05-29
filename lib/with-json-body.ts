@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { MSG } from "./messages";
 
 type ApiHandler = (
   req: NextApiRequest,
@@ -23,9 +24,7 @@ export function withJsonBody(handler: ApiHandler): ApiHandler {
         typeof body !== "object" ||
         Array.isArray(body)
       ) {
-        return res
-          .status(400)
-          .json({ error: "Body deve ser um objecto JSON válido" });
+        return res.status(400).json({ error: MSG.BODY_INVALID });
       }
     }
     return handler(req, res);
