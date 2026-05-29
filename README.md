@@ -229,9 +229,169 @@ O store arranca com **2 produtos aleatórios** gerados automaticamente (nomes, p
 
 ## Scripts disponíveis
 
-| Comando         | Descrição                                          |
-| --------------- | -------------------------------------------------- |
-| `npm run dev`   | Inicia o servidor de desenvolvimento (HTTPS local) |
-| `npm run build` | Compila o projeto para produção                    |
-| `npm run start` | Inicia o servidor em modo produção                 |
-| `npm run lint`  | Corre o linter                                     |
+| Comando                   | Descrição                                          |
+| ------------------------- | -------------------------------------------------- |
+| `npm run dev`             | Inicia o servidor de desenvolvimento (HTTPS local) |
+| `npm run build`           | Compila o projeto para produção                    |
+| `npm run start`           | Inicia o servidor em modo produção                 |
+| `npm run lint`            | Corre o linter                                     |
+| `npm run test:e2e`        | Corre todos os testes E2E com Playwright           |
+| `npm run test:e2e:ui`     | Abre a interface visual do Playwright              |
+| `npm run test:e2e:report` | Abre o relatório HTML do último run                |
+
+---
+
+## Testes E2E com Playwright
+
+Os testes estão em `tests/e2e/` e cobrem as camadas de API e UI.
+
+### Estrutura dos testes
+
+```
+tests/e2e/
+  api/
+    products.spec.ts   ← Testes de API (request context — sem browser)
+  ui/
+    products-page.spec.ts    ← Testes da página /products
+    product-detail.spec.ts   ← Testes da página /products/[id]
+```
+
+### Correr os testes
+
+```bash
+# Correr todos os testes (inicia o servidor automaticamente se necessário)
+npm run test:e2e
+
+# Interface visual — selecionar e depurar testes individualmente
+npm run test:e2e:ui
+
+# Ver o relatório HTML do último run
+npm run test:e2e:report
+```
+
+> O Playwright inicia o servidor `npm run dev` automaticamente antes dos testes e reutiliza-o se já estiver a correr (`reuseExistingServer: true` em dev). Os testes correm sequencialmente (`workers: 1`) porque o store é partilhado em memória.
+
+### Como os testes funcionam
+
+Cada ficheiro de testes usa `test.beforeEach` para **resetar o store** antes de cada teste, garantindo isolamento:
+
+```typescript
+test.beforeEach(async ({ request }) => {
+  await request.post("/api/products/reset");
+});
+```
+
+**Testes de API** usam o `request` context do Playwright (sem browser) — ideais para validar status codes, headers e corpo da resposta:
+
+```typescript
+test("returns 200 with an array of products", async ({ request }) => {
+  const res = await request.get("/api/products");
+
+  expect(res.status()).toBe(200);
+  const body = await res.json();
+  expect(Array.isArray(body)).toBe(true);
+});
+```
+
+**Testes de UI** usam `page` para navegar e interagir com o browser:
+
+```typescript
+test("shows 2 product cards after reset", async ({ page }) => {
+  await page.goto("/products");
+  const cards = page.getByRole("heading", { level: 2 });
+
+  await expect(cards).toHaveCount(2);
+});
+```
+
+### Criar novos testes
+
+#### 1. Teste de API
+
+Cria (ou edita) um ficheiro em `tests/e2e/api/`. Importa `test` e `expect` do Playwright e usa o fixture `request`:
+
+```typescript
+import { test, expect } from "@playwright/test";
+
+const BASE = "/api/products";
+
+test.beforeEach(async ({ request }) => {
+  await request.post(`${BASE}/reset`);
+});
+
+test.describe("PATCH /api/products/:id", () => {
+  test("returns 200 and updates the field", async ({ request }) => {
+    // 1. Obter um produto existente
+    const list = await request.get(BASE);
+    const products = await list.json();
+    const id = products[0].id;
+
+    // 2. Executar a ação
+    const res = await request.patch(`${BASE}/${id}`, {
+      data: { price: 99.99 },
+    });
+
+    // 3. Validar
+    expect(res.status()).toBe(200);
+    const body = await res.json();
+    expect(body.price).toBe(99.99);
+  });
+
+  test("returns 400 when price is negative", async ({ request }) => {
+    const list = await request.get(BASE);
+    const id = (await list.json())[0].id;
+
+    const res = await request.patch(`${BASE}/${id}`, {
+      data: { price: -5 },
+    });
+
+    expect(res.status()).toBe(400);
+  });
+});
+```
+
+#### 2. Teste de UI
+
+Cria (ou edita) um ficheiro em `tests/e2e/ui/`. Usa os fixtures `page` e `request` em conjunto:
+
+```typescript
+import { test, expect } from "@playwright/test";
+
+test.beforeEach(async ({ request, page }) => {
+  await request.post("/api/products/reset");
+  await page.goto("/products");
+  // Aguardar que os cards carreguem
+  await expect(page.getByRole("heading", { level: 2 }).first()).toBeVisible();
+});
+
+test("mostra o nome do produto no card", async ({ page }) => {
+  // Obter o nome via API para comparar
+  const res = await page.request.get("/api/products");
+  const products = await res.json();
+
+  await expect(
+    page.getByRole("heading", { name: products[0].name }),
+  ).toBeVisible();
+});
+```
+
+#### Boas práticas
+
+- **Usar locators semânticos** (`getByRole`, `getByText`, `getByTitle`) em vez de seletores CSS/XPath — são mais resilientes a mudanças de markup.
+- **Sempre resetar o store** no `beforeEach` para garantir isolamento entre testes.
+- **Não depender da ordem dos testes** — cada teste deve ser autossuficiente.
+- **Preferir `toBeVisible()`** em vez de verificar só a existência no DOM.
+- **Agrupar com `test.describe`** quando há vários cenários para o mesmo endpoint ou funcionalidade.
+
+### Configuração
+
+A configuração está em `playwright.config.ts`:
+
+| Opção               | Valor                    |
+| ------------------- | ------------------------ |
+| `testDir`           | `./tests/e2e`            |
+| `baseURL`           | `https://localhost:3000` |
+| Browser             | Chromium                 |
+| `workers`           | `1` (sequencial)         |
+| `retries` em CI     | `2`                      |
+| HTTPS auto-assinado | ignorado automaticamente |
