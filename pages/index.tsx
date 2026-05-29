@@ -2,123 +2,8 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import styles from "@/styles/Home.module.css";
-
-const endpointGroups = [
-  {
-    title: "Coleção",
-    resource: "/api/products",
-    endpoints: [
-      {
-        method: "GET",
-        description: "Lista todos os produtos",
-        body: null,
-      },
-      {
-        method: "POST",
-        description: "Cria um novo produto",
-        body: JSON.stringify(
-          {
-            name: "Novo produto",
-            description: "Descrição",
-            price: 9.99,
-            quantity: 5,
-            active: true,
-            createdAt: "2026-05-12T10:00:00.000Z",
-          },
-          null,
-          2,
-        ),
-      },
-    ],
-  },
-  {
-    title: "Produto individual",
-    resource: "/api/products/id",
-    endpoints: [
-      {
-        method: "GET",
-        description: "Retorna um produto pelo ID",
-        body: null,
-      },
-      {
-        method: "PUT",
-        description: "Substitui o produto completo",
-        body: JSON.stringify(
-          {
-            name: "Nome atualizado",
-            description: "Nova descrição",
-            price: 19.99,
-            quantity: 8,
-            active: true,
-            createdAt: "2026-05-12T10:00:00.000Z",
-          },
-          null,
-          2,
-        ),
-      },
-      {
-        method: "PATCH",
-        description: "Atualiza campos parcialmente",
-        body: JSON.stringify(
-          { active: false, price: 5.5, quantity: 2 },
-          null,
-          2,
-        ),
-      },
-      {
-        method: "DELETE",
-        description: "Remove um produto pelo ID",
-        body: null,
-      },
-    ],
-  },
-  {
-    title: "Produto aleatório",
-    resource: "/api/products/random",
-    endpoints: [
-      {
-        method: "POST",
-        description:
-          "Cria um produto com dados aleatórios — sem body necessário",
-        body: null,
-      },
-    ],
-  },
-  {
-    title: "Reset",
-    resource: "/api/products/reset",
-    endpoints: [
-      {
-        method: "POST",
-        description:
-          "Restaura o store com 2 produtos aleatórios — sem body necessário",
-        body: null,
-      },
-    ],
-  },
-  {
-    title: "Sitemap",
-    resource: "/sitemap.xml",
-    endpoints: [
-      {
-        method: "GET",
-        description: "Sitemap XML com páginas estáticas e produtos",
-        body: null,
-      },
-    ],
-  },
-  {
-    title: "RSS Feed",
-    resource: "/feed.xml",
-    endpoints: [
-      {
-        method: "GET",
-        description: "Feed RSS com todos os produtos ordenados por data",
-        body: null,
-      },
-    ],
-  },
-];
+import { useLang, LangSelector } from "../lib/LangContext";
+import type { TranslationKey } from "../lib/i18n";
 
 const methodColor: Record<string, string> = {
   GET: "#61affe",
@@ -128,8 +13,15 @@ const methodColor: Record<string, string> = {
   DELETE: "#f93e3e",
 };
 
-function CopyButton({ text, title }: { text: string; title?: string }) {
+function CopyButton({
+  text,
+  titleKey,
+}: {
+  text: string;
+  titleKey: TranslationKey;
+}) {
   const [copied, setCopied] = useState(false);
+  const { t } = useLang();
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(text);
@@ -138,11 +30,7 @@ function CopyButton({ text, title }: { text: string; title?: string }) {
   };
 
   return (
-    <button
-      className={styles.copyBtn}
-      onClick={handleCopy}
-      title={title ?? "Copiar"}
-    >
+    <button className={styles.copyBtn} onClick={handleCopy} title={t(titleKey)}>
       {copied ? "✓" : "⎘"}
     </button>
   );
@@ -150,33 +38,120 @@ function CopyButton({ text, title }: { text: string; title?: string }) {
 
 export default function Home() {
   const [base, setBase] = useState("");
+  const { t } = useLang();
 
   useEffect(() => {
     setBase(window.location.origin);
   }, []);
 
+  const endpointGroups = [
+    {
+      title: t("groupCollection"),
+      resource: "/api/products",
+      endpoints: [
+        { method: "GET", description: t("descListAll"), body: null },
+        {
+          method: "POST",
+          description: t("descCreate"),
+          body: JSON.stringify(
+            {
+              name: "New product",
+              description: "Description",
+              price: 9.99,
+              quantity: 5,
+              active: true,
+              createdAt: "2026-05-12T10:00:00.000Z",
+            },
+            null,
+            2,
+          ),
+        },
+      ],
+    },
+    {
+      title: t("groupSingle"),
+      resource: "/api/products/id",
+      endpoints: [
+        { method: "GET", description: t("descGetById"), body: null },
+        {
+          method: "PUT",
+          description: t("descReplace"),
+          body: JSON.stringify(
+            {
+              name: "Updated product",
+              description: "New description",
+              price: 19.99,
+              quantity: 8,
+              active: true,
+              createdAt: "2026-05-12T10:00:00.000Z",
+            },
+            null,
+            2,
+          ),
+        },
+        {
+          method: "PATCH",
+          description: t("descPatch"),
+          body: JSON.stringify(
+            { active: false, price: 5.5, quantity: 2 },
+            null,
+            2,
+          ),
+        },
+        { method: "DELETE", description: t("descDelete"), body: null },
+      ],
+    },
+    {
+      title: t("groupRandom"),
+      resource: "/api/products/random",
+      endpoints: [{ method: "POST", description: t("descRandom"), body: null }],
+    },
+    {
+      title: t("groupReset"),
+      resource: "/api/products/reset",
+      endpoints: [
+        { method: "POST", description: t("descResetStore"), body: null },
+      ],
+    },
+    {
+      title: t("groupSitemap"),
+      resource: "/sitemap.xml",
+      endpoints: [{ method: "GET", description: t("descSitemap"), body: null }],
+    },
+    {
+      title: t("groupFeed"),
+      resource: "/feed.xml",
+      endpoints: [{ method: "GET", description: t("descFeed"), body: null }],
+    },
+  ];
+
   return (
     <>
       <Head>
         <title>Estudo API</title>
-        <meta name="description" content="Documentação da API de estudo" />
+        <meta name="description" content={t("metaDescription")} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/api.png" />
       </Head>
       <div className={styles.page}>
         <main className={styles.main}>
           <div className={styles.intro}>
-            <h1>Estudo API</h1>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <h1>Estudo API</h1>
+              <LangSelector />
+            </div>
             <p>
-              API REST de teste com operações CRUD sobre{" "}
-              <code>/api/products</code>
-              .<br />
-              Base URL: <code>{base}</code>
+              {t("intro")} <code>/api/products</code>.<br />
+              {t("baseUrl")} <code>{base}</code>
             </p>
             <p style={{ fontSize: 13, color: "#8b949e", margin: "8px 0 4px" }}>
-              Cada chamada à API modifica o <em>store</em> em memória — crie,
-              edite ou apague produtos aqui e veja o resultado reflectido em{" "}
-              <strong>tempo real</strong> na página de cards.
+              {t("callsHint")}
             </p>
             <div className={styles.navRow}>
               <Link
@@ -187,7 +162,7 @@ export default function Home() {
                   textDecoration: "none",
                 }}
               >
-                Ver produtos em cards →
+                {t("viewCards")}
               </Link>
               <div className={styles.metaLinks}>
                 <a
@@ -245,7 +220,7 @@ export default function Home() {
                 <div className={styles.groupHeader}>
                   <span className={styles.groupTitle}>{group.title}</span>
                   <code className={styles.groupResource}>{group.resource}</code>
-                  <CopyButton text={group.resource} title="Copiar path" />
+                  <CopyButton text={group.resource} titleKey="copyPath" />
                 </div>
                 <div className={styles.endpoints}>
                   {group.endpoints.map((ep) => (
@@ -265,7 +240,7 @@ export default function Home() {
                             <span className={styles.bodyLabel}>
                               Body (JSON)
                             </span>
-                            <CopyButton text={ep.body} title="Copiar body" />
+                            <CopyButton text={ep.body} titleKey="copyBody" />
                           </div>
                           <pre className={styles.pre}>{ep.body}</pre>
                         </div>

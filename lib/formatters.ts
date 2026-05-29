@@ -3,8 +3,8 @@
  * @param value - The price to format.
  * @returns Formatted currency string, e.g. "€ 9,99".
  */
-export function formatPrice(value: number): string {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "EUR" });
+export function formatPrice(value: number, locale = "en-US"): string {
+  return value.toLocaleString(locale, { style: "currency", currency: "EUR" });
 }
 
 /**
@@ -13,12 +13,16 @@ export function formatPrice(value: number): string {
  * @param includeTime - Whether to include hours and minutes.
  * @returns Formatted date string.
  */
-export function formatDate(iso: string, includeTime = false): string {
+export function formatDate(
+  iso: string,
+  includeTime = false,
+  locale = "en-US",
+): string {
   const options: Intl.DateTimeFormatOptions = {
     day: "2-digit",
     month: "short",
     year: "numeric",
     ...(includeTime && { hour: "2-digit", minute: "2-digit" }),
   };
-  return new Date(iso).toLocaleString("pt-BR", options);
+  return new Date(iso).toLocaleString(locale, options);
 }

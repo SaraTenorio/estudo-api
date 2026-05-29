@@ -11,7 +11,7 @@ function escapeXml(str: string): string {
 }
 
 function formatPrice(value: number): string {
-  return value.toLocaleString("pt-PT", { style: "currency", currency: "EUR" });
+  return value.toLocaleString("en-US", { style: "currency", currency: "EUR" });
 }
 
 function buildFeed(base: string): string {
@@ -28,9 +28,9 @@ function buildFeed(base: string): string {
       const desc = escapeXml(
         [
           p.description,
-          `Preço: ${formatPrice(p.price)}`,
-          `Quantidade: ${p.quantity}`,
-          `Estado: ${p.active ? "Ativo" : "Inativo"}`,
+          `Price: ${formatPrice(p.price)}`,
+          `Quantity: ${p.quantity}`,
+          `Status: ${p.active ? "Active" : "Inactive"}`,
         ]
           .filter(Boolean)
           .join(" · "),
@@ -52,10 +52,10 @@ function buildFeed(base: string): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Estudo API — Produtos</title>
+    <title>Estudo API — Products</title>
     <link>${base}/products</link>
-    <description>Feed RSS dos produtos disponíveis na Estudo API.</description>
-    <language>pt-PT</language>
+    <description>RSS feed of products available in Estudo API.</description>
+    <language>en</language>
     <lastBuildDate>${now}</lastBuildDate>
     <atom:link href="${base}/feed.xml" rel="self" type="application/rss+xml" />
 ${items}
