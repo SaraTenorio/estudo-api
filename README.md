@@ -47,6 +47,8 @@ Abre o browser nas seguintes páginas:
 ```
 lib/
   store.ts               ← Store em memória + makeRandomProduct (partilhado)
+  product-validation.ts  ← Validação de campos do produto (fases 1–3)
+  with-json-body.ts      ← Middleware: guarda body nulo/não-objeto (fase 4)
 pages/
   index.tsx              ← Página de documentação da API
   products.tsx           ← Página de visualização em cards
@@ -167,12 +169,32 @@ pages/
 
 ## Validações
 
-- `name` — obrigatório em POST e PUT; deve ser `string`
-- `price` — deve ser `number` (decimal)
-- `quantity` — deve ser um inteiro não negativo
-- `createdAt` — deve ser uma data ISO 8601 válida (ex: `"2026-05-12T10:00:00.000Z"`)
-- Campos inválidos retornam `400 Bad Request` com `{ "error": "..." }`
-- Método não suportado retorna `405 Method Not Allowed` com header `Allow`
+A validação é aplicada em 4 camadas, implementadas em `lib/product-validation.ts` e `lib/with-json-body.ts`.
+
+### Middleware — body guard (`lib/with-json-body.ts`)
+
+Aplicado automaticamente em todas as rotas com body (POST, PUT, PATCH). Rejeita requests cujo body seja nulo, não-objeto ou array antes de chegar ao handler.
+
+### Regras de campo (`lib/product-validation.ts`)
+
+| Campo         | POST / PUT  | PATCH    | Regras                                                  |
+| ------------- | ----------- | -------- | ------------------------------------------------------- |
+| `name`        | obrigatório | opcional | `string` não vazio (só espaços rejeitado)               |
+| `description` | opcional    | opcional | `string`                                                |
+| `price`       | opcional    | opcional | `number` decimal, não negativo (≥ 0)                    |
+| `quantity`    | opcional    | opcional | inteiro não negativo                                    |
+| `active`      | opcional    | opcional | `boolean` estrito (`"true"` como string é rejeitado)    |
+| `createdAt`   | opcional    | opcional | ISO 8601 UTC estrito — ex: `"2026-05-12T10:00:00.000Z"` |
+
+> Campos desconhecidos (não listados acima) são rejeitados com `400 Bad Request`, protegendo contra prototype pollution.
+
+### Respostas de erro
+
+| Situação                   | Status                                        |
+| -------------------------- | --------------------------------------------- |
+| Campo inválido ou em falta | `400 Bad Request`                             |
+| Produto não encontrado     | `404 Not Found`                               |
+| Método não suportado       | `405 Method Not Allowed` (com header `Allow`) |
 
 ---
 

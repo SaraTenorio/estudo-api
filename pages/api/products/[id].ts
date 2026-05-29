@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { store } from "../../../lib/store";
 import type { Product } from "../../../lib/store";
 import { validateProductBody } from "../../../lib/product-validation";
+import { withJsonBody } from "../../../lib/with-json-body";
 
 type ErrorResponse = { error: string };
 
@@ -13,7 +14,7 @@ const ALLOWED_METHODS = "GET, PUT, PATCH, DELETE";
  * PATCH  /api/products/id  → atualiza campos parcialmente
  * DELETE /api/products/id  → remove o produto
  */
-export default function handler(
+function handler(
   req: NextApiRequest,
   res: NextApiResponse<Product | ErrorResponse>,
 ) {
@@ -77,3 +78,5 @@ export default function handler(
   res.setHeader("Allow", ALLOWED_METHODS);
   return res.status(405).json({ error: `Método ${req.method} não permitido` });
 }
+
+export default withJsonBody(handler);
