@@ -1,63 +1,66 @@
+[![en](https://img.shields.io/badge/lang-en-blue)](README.md)
+[![pt](https://img.shields.io/badge/lang-pt--PT-green)](README.pt.md)
+
 # Estudo API
 
-API REST de teste construída com **Next.js** (Pages Router) e **TypeScript**, com dados em memória. Ideal para testar requisições HTTP no Postman ou qualquer cliente REST.
+A REST test API built with **Next.js** (Pages Router) and **TypeScript**, with in-memory data. Ideal for testing HTTP requests in Postman or any REST client.
 
 ---
 
-## Pré-requisitos
+## Prerequisites
 
 - [Node.js](https://nodejs.org/) LTS (v18+)
-- npm (incluído com o Node.js)
+- npm (included with Node.js)
 
 ---
 
-## Instalação e arranque
+## Installation and start
 
 ```bash
-# 1. Entrar na pasta do projeto
+# 1. Enter the project folder
 cd estudo
 
-# 2. Instalar dependências (apenas na primeira vez)
+# 2. Install dependencies (first time only)
 npm install
 
-# 3. Arrancar o servidor de desenvolvimento
+# 3. Start the development server
 npm run dev
 ```
 
-O servidor fica disponível em **https://localhost:3000**.
+The server will be available at **https://localhost:3000**.
 
-Abre o browser nas seguintes páginas:
+Open the browser at the following pages:
 
-| URL                                  | Descrição                                         |
-| ------------------------------------ | ------------------------------------------------- |
-| `https://localhost:3000`             | Documentação dos endpoints da API                 |
-| `https://localhost:3000/products`    | Visualização dos produtos em cards (interface UI) |
-| `https://localhost:3000/products/id` | Página de detalhes de um produto                  |
-| `https://localhost:3000/sitemap.xml` | Sitemap XML com páginas estáticas e produtos      |
-| `https://localhost:3000/feed.xml`    | RSS Feed com todos os produtos                    |
+| URL                                  | Description                                |
+| ------------------------------------ | ------------------------------------------ |
+| `https://localhost:3000`             | API endpoint documentation                 |
+| `https://localhost:3000/products`    | Products displayed as cards (UI interface) |
+| `https://localhost:3000/products/id` | Product detail page                        |
+| `https://localhost:3000/sitemap.xml` | XML Sitemap with static pages and products |
+| `https://localhost:3000/feed.xml`    | RSS Feed with all products                 |
 
-> **HTTPS local:** O servidor de desenvolvimento arranca com HTTPS usando a flag `--experimental-https`. O Next.js gera automaticamente um certificado auto-assinado localmente através do [`mkcert`](https://github.com/FiloSottile/mkcert). Na primeira execução pode ser necessário aceitar o certificado no browser.
+> **Local HTTPS:** The development server starts with HTTPS using the `--experimental-https` flag. Next.js automatically generates a self-signed certificate locally via [`mkcert`](https://github.com/FiloSottile/mkcert). On first run you may need to accept the certificate in the browser.
 
-> **Nota:** os dados vivem em memória e são reiniciados sempre que o servidor é reiniciado. Os dados iniciais são carregados automaticamente.
+> **Note:** data lives in memory and is reset whenever the server restarts. Initial data is loaded automatically.
 
 ---
 
-## Estrutura do projeto
+## Project structure
 
 ```
 lib/
-  store.ts               ← Store em memória + makeRandomProduct (partilhado)
-  product-validation.ts  ← Validação de campos do produto
-  with-json-body.ts      ← Middleware: guarda body nulo/não-objeto
+  store.ts               ← In-memory store + makeRandomProduct (shared)
+  product-validation.ts  ← Product field validation
+  with-json-body.ts      ← Middleware: guards null/non-object bodies
 pages/
-  index.tsx              ← Página de documentação da API
-  products.tsx           ← Página de visualização em cards
+  index.tsx              ← API documentation page
+  products.tsx           ← Card view page
   products/
-    [id].tsx             ← Página de detalhes do produto (toggle ativo, remover)
-  sitemap.xml.tsx        ← GET /sitemap.xml — Sitemap XML dinâmico
-  feed.xml.tsx           ← GET /feed.xml — RSS Feed dos produtos
+    [id].tsx             ← Product detail page (toggle active, remove)
+  sitemap.xml.tsx        ← GET /sitemap.xml — Dynamic XML Sitemap
+  feed.xml.tsx           ← GET /feed.xml — Products RSS Feed
   api/
-    hello.ts             ← Rota de exemplo do Next.js
+    hello.ts             ← Next.js example route
     products/
       index.ts           ← GET /api/products · POST /api/products
       [id].ts            ← GET · PUT · PATCH · DELETE /api/products/id
@@ -67,74 +70,74 @@ pages/
 
 ---
 
-## Modelo de dados — `Product`
+## Data model — `Product`
 
-| Campo         | Tipo      | Obrigatório | Default                    | Descrição                         |
-| ------------- | --------- | ----------- | -------------------------- | --------------------------------- |
-| `id`          | `number`  | automático  | —                          | Identificador único (inteiro)     |
-| `name`        | `string`  | ✅          | —                          | Nome do produto                   |
-| `description` | `string`  | ❌          | `""`                       | Descrição livre                   |
-| `price`       | `number`  | ❌          | `0`                        | Preço decimal                     |
-| `quantity`    | `number`  | ❌          | `0`                        | Quantidade em stock (inteiro ≥ 0) |
-| `active`      | `boolean` | ❌          | `true`                     | Estado ativo/inativo              |
-| `createdAt`   | `string`  | ❌          | `new Date().toISOString()` | Data de criação (ISO 8601)        |
+| Field         | Type      | Required  | Default                    | Description                       |
+| ------------- | --------- | --------- | -------------------------- | --------------------------------- |
+| `id`          | `number`  | automatic | —                          | Unique integer identifier         |
+| `name`        | `string`  | ✅        | —                          | Product name                      |
+| `description` | `string`  | ❌        | `""`                       | Free description                  |
+| `price`       | `number`  | ❌        | `0`                        | Decimal price                     |
+| `quantity`    | `number`  | ❌        | `0`                        | Stock quantity (non-negative int) |
+| `active`      | `boolean` | ❌        | `true`                     | Active/inactive status            |
+| `createdAt`   | `string`  | ❌        | `new Date().toISOString()` | Creation date (ISO 8601)          |
 
 ---
 
 ## Endpoints
 
-### Coleção — `/api/products`
+### Collection — `/api/products`
 
-| Método | Descrição               |
-| ------ | ----------------------- |
-| `GET`  | Lista todos os produtos |
-| `POST` | Cria um novo produto    |
+| Method | Description          |
+| ------ | -------------------- |
+| `GET`  | List all products    |
+| `POST` | Create a new product |
 
-### Produto individual — `/api/products/id`
+### Individual product — `/api/products/id`
 
-| Método   | Descrição                    |
-| -------- | ---------------------------- |
-| `GET`    | Retorna um produto pelo ID   |
-| `PUT`    | Substitui o produto completo |
-| `PATCH`  | Atualiza campos parcialmente |
-| `DELETE` | Remove o produto             |
+| Method   | Description              |
+| -------- | ------------------------ |
+| `GET`    | Return a product by ID   |
+| `PUT`    | Replace the full product |
+| `PATCH`  | Partially update fields  |
+| `DELETE` | Remove the product       |
 
-### Produto aleatório — `/api/products/random`
+### Random product — `/api/products/random`
 
-| Método | Descrição                                       |
-| ------ | ----------------------------------------------- |
-| `POST` | Cria um produto com dados aleatórios (sem body) |
+| Method | Description                                 |
+| ------ | ------------------------------------------- |
+| `POST` | Create a product with random data (no body) |
 
 ### Reset — `/api/products/reset`
 
-| Método | Descrição                                             |
-| ------ | ----------------------------------------------------- |
-| `POST` | Restaura o store com 2 produtos aleatórios (sem body) |
+| Method | Description                                        |
+| ------ | -------------------------------------------------- |
+| `POST` | Restore the store with 2 random products (no body) |
 
 ### Sitemap — `/sitemap.xml`
 
-| Método | Descrição                                                                         |
-| ------ | --------------------------------------------------------------------------------- |
-| `GET`  | Sitemap XML com páginas estáticas (`/`, `/products`) e todos os produtos do store |
+| Method | Description                                                                      |
+| ------ | -------------------------------------------------------------------------------- |
+| `GET`  | XML Sitemap with static pages (`/`, `/products`) and all products from the store |
 
 ### RSS Feed — `/feed.xml`
 
-| Método | Descrição                                                                  |
-| ------ | -------------------------------------------------------------------------- |
-| `GET`  | RSS 2.0 com todos os produtos ordenados do mais recente para o mais antigo |
+| Method | Description                                            |
+| ------ | ------------------------------------------------------ |
+| `GET`  | RSS 2.0 with all products sorted from newest to oldest |
 
-> Ambas as rotas são geradas dinamicamente (`getServerSideProps`) sem cache, pelo que reflectem sempre o estado atual do store.
+> Both routes are generated dynamically (`getServerSideProps`) without cache, so they always reflect the current store state.
 
 ---
 
-## Exemplos de body (JSON)
+## Body examples (JSON)
 
 ### POST `/api/products`
 
 ```json
 {
-  "name": "Novo produto",
-  "description": "Descrição do produto",
+  "name": "New product",
+  "description": "Product description",
   "price": 9.99,
   "quantity": 5,
   "active": true,
@@ -146,8 +149,8 @@ pages/
 
 ```json
 {
-  "name": "Produto atualizado",
-  "description": "Nova descrição",
+  "name": "Updated product",
+  "description": "New description",
   "price": 19.99,
   "quantity": 8,
   "active": true,
@@ -155,7 +158,7 @@ pages/
 }
 ```
 
-### PATCH `/api/products/id` — apenas os campos a alterar
+### PATCH `/api/products/id` — only the fields to change
 
 ```json
 {
@@ -167,113 +170,113 @@ pages/
 
 ---
 
-## Validações
+## Validations
 
-A validação é aplicada em 4 camadas, implementadas em `lib/product-validation.ts` e `lib/with-json-body.ts`.
+Validation is applied in 4 layers, implemented in `lib/product-validation.ts` and `lib/with-json-body.ts`.
 
 ### Middleware — body guard (`lib/with-json-body.ts`)
 
-Aplicado automaticamente em todas as rotas com body (POST, PUT, PATCH). Rejeita requests cujo body seja nulo, não-objeto ou array antes de chegar ao handler.
+Automatically applied to all routes with a body (POST, PUT, PATCH). Rejects requests whose body is null, a non-object, or an array before reaching the handler.
 
-### Regras de campo (`lib/product-validation.ts`)
+### Field rules (`lib/product-validation.ts`)
 
-| Campo         | POST / PUT  | PATCH    | Regras                                                  |
-| ------------- | ----------- | -------- | ------------------------------------------------------- |
-| `name`        | obrigatório | opcional | `string` não vazio (só espaços rejeitado)               |
-| `description` | opcional    | opcional | `string`                                                |
-| `price`       | opcional    | opcional | `number` decimal, não negativo (≥ 0)                    |
-| `quantity`    | opcional    | opcional | inteiro não negativo                                    |
-| `active`      | opcional    | opcional | `boolean` estrito (`"true"` como string é rejeitado)    |
-| `createdAt`   | opcional    | opcional | ISO 8601 UTC estrito — ex: `"2026-05-12T10:00:00.000Z"` |
+| Field         | POST / PUT | PATCH    | Rules                                                   |
+| ------------- | ---------- | -------- | ------------------------------------------------------- |
+| `name`        | required   | optional | non-empty `string` (whitespace-only rejected)           |
+| `description` | optional   | optional | `string`                                                |
+| `price`       | optional   | optional | non-negative decimal `number` (≥ 0)                     |
+| `quantity`    | optional   | optional | non-negative integer                                    |
+| `active`      | optional   | optional | strict `boolean` (`"true"` as string is rejected)       |
+| `createdAt`   | optional   | optional | strict ISO 8601 UTC — e.g. `"2026-05-12T10:00:00.000Z"` |
 
-> Campos desconhecidos (não listados acima) são rejeitados com `400 Bad Request`, protegendo contra prototype pollution.
+> Unknown fields (not listed above) are rejected with `400 Bad Request`, protecting against prototype pollution.
 
-### Respostas de erro
+### Error responses
 
-| Situação                   | Status                                        |
-| -------------------------- | --------------------------------------------- |
-| Campo inválido ou em falta | `400 Bad Request`                             |
-| Produto não encontrado     | `404 Not Found`                               |
-| Método não suportado       | `405 Method Not Allowed` (com header `Allow`) |
-
----
-
-## Dados iniciais
-
-O store arranca com **2 produtos aleatórios** gerados automaticamente (nomes, preços e quantidades variam a cada arranque do servidor). O endpoint de reset também regenera esses 2 produtos com dados aleatórios novos.
+| Situation                | Status                                         |
+| ------------------------ | ---------------------------------------------- |
+| Invalid or missing field | `400 Bad Request`                              |
+| Product not found        | `404 Not Found`                                |
+| Method not supported     | `405 Method Not Allowed` (with `Allow` header) |
 
 ---
 
-## Interface UI — funcionalidades
+## Initial data
 
-### Página de lista (`/products`)
-
-- Visualização em cards de todos os produtos do store
-- Botão **↻** para refrescar a lista
-- Botão **+ Produto aleatório** para criar um produto via `POST /api/products/random`
-- Botão **Resetar store** para repor o estado inicial via `POST /api/products/reset`
-- Botão **🗑** em cada card para remover o produto via `DELETE /api/products/id`
-- Link **Ver detalhes →** em cada card para navegar para a página de detalhes
-- Links para `/sitemap.xml` e `/feed.xml` no rodapé
-
-### Página de detalhes (`/products/id`)
-
-- Dados organizados em secções: **Identificação**, **Inventário**, **Metadados**
-- **Toggle switch** para ativar/desativar o produto via `PATCH /api/products/id`
-- Botão **🗑 Remover** para apagar o produto e regressar à lista
-- Botão **↻** para refrescar os dados
-- Bloco JSON com a resposta raw de `GET /api/products/id`
-- Página 404 estilizada se o produto não existir
+The store starts with **2 random products** generated automatically (names, prices and quantities vary on each server start). The reset endpoint also regenerates those 2 products with new random data.
 
 ---
 
-## Scripts disponíveis
+## UI Interface — features
 
-| Comando                   | Descrição                                          |
-| ------------------------- | -------------------------------------------------- |
-| `npm run dev`             | Inicia o servidor de desenvolvimento (HTTPS local) |
-| `npm run build`           | Compila o projeto para produção                    |
-| `npm run start`           | Inicia o servidor em modo produção                 |
-| `npm run lint`            | Corre o linter                                     |
-| `npm run test:e2e`        | Corre todos os testes E2E com Playwright           |
-| `npm run test:e2e:ui`     | Abre a interface visual do Playwright              |
-| `npm run test:e2e:report` | Abre o relatório HTML do último run                |
+### List page (`/products`)
+
+- Card view of all products in the store
+- **↻** button to refresh the list
+- **+ Random product** button to create a product via `POST /api/products/random`
+- **Reset store** button to restore the initial state via `POST /api/products/reset`
+- **🗑** button on each card to remove the product via `DELETE /api/products/id`
+- **View details →** link on each card to navigate to the detail page
+- Links to `/sitemap.xml` and `/feed.xml` in the footer
+
+### Detail page (`/products/id`)
+
+- Data organised in sections: **Identification**, **Inventory**, **Metadata**
+- **Toggle switch** to activate/deactivate the product via `PATCH /api/products/id`
+- **🗑 Remove** button to delete the product and return to the list
+- **↻** button to refresh the data
+- JSON block with the raw response of `GET /api/products/id`
+- Styled 404 page if the product does not exist
 
 ---
 
-## Testes E2E com Playwright
+## Available scripts
 
-Os testes estão em `tests/e2e/` e cobrem as camadas de API e UI.
+| Command                   | Description                                |
+| ------------------------- | ------------------------------------------ |
+| `npm run dev`             | Start the development server (local HTTPS) |
+| `npm run build`           | Compile the project for production         |
+| `npm run start`           | Start the server in production mode        |
+| `npm run lint`            | Run the linter                             |
+| `npm run test:e2e`        | Run all E2E tests with Playwright          |
+| `npm run test:e2e:ui`     | Open the Playwright visual interface       |
+| `npm run test:e2e:report` | Open the HTML report from the last run     |
 
-### Estrutura dos testes
+---
+
+## E2E tests with Playwright
+
+The tests are in `tests/e2e/` and cover the API and UI layers.
+
+### Test structure
 
 ```
 tests/e2e/
   api/
-    products.spec.ts   ← Testes de API (request context — sem browser)
+    products.spec.ts   ← API tests (request context — no browser)
   ui/
-    products-page.spec.ts    ← Testes da página /products
-    product-detail.spec.ts   ← Testes da página /products/[id]
+    products-page.spec.ts    ← Tests for the /products page
+    product-detail.spec.ts   ← Tests for the /products/[id] page
 ```
 
-### Correr os testes
+### Running the tests
 
 ```bash
-# Correr todos os testes (inicia o servidor automaticamente se necessário)
+# Run all tests (starts the server automatically if needed)
 npm run test:e2e
 
-# Interface visual — selecionar e depurar testes individualmente
+# Visual interface — select and debug tests individually
 npm run test:e2e:ui
 
-# Ver o relatório HTML do último run
+# View the HTML report from the last run
 npm run test:e2e:report
 ```
 
-> O Playwright inicia o servidor `npm run dev` automaticamente antes dos testes e reutiliza-o se já estiver a correr (`reuseExistingServer: true` em dev). Os testes correm sequencialmente (`workers: 1`) porque o store é partilhado em memória.
+> Playwright starts the `npm run dev` server automatically before tests and reuses it if already running (`reuseExistingServer: true` in dev). Tests run sequentially (`workers: 1`) because the store is shared in memory.
 
-### Como os testes funcionam
+### How the tests work
 
-Cada ficheiro de testes usa `test.beforeEach` para **resetar o store** antes de cada teste, garantindo isolamento:
+Each test file uses `test.beforeEach` to **reset the store** before each test, ensuring isolation:
 
 ```typescript
 test.beforeEach(async ({ request }) => {
@@ -281,7 +284,7 @@ test.beforeEach(async ({ request }) => {
 });
 ```
 
-**Testes de API** usam o `request` context do Playwright (sem browser) — ideais para validar status codes, headers e corpo da resposta:
+**API tests** use the Playwright `request` context (no browser) — ideal for validating status codes, headers and response body:
 
 ```typescript
 test("returns 200 with an array of products", async ({ request }) => {
@@ -293,7 +296,7 @@ test("returns 200 with an array of products", async ({ request }) => {
 });
 ```
 
-**Testes de UI** usam `page` para navegar e interagir com o browser:
+**UI tests** use `page` to navigate and interact with the browser:
 
 ```typescript
 test("shows 2 product cards after reset", async ({ page }) => {
@@ -304,11 +307,11 @@ test("shows 2 product cards after reset", async ({ page }) => {
 });
 ```
 
-### Criar novos testes
+### Creating new tests
 
-#### 1. Teste de API
+#### 1. API test
 
-Cria (ou edita) um ficheiro em `tests/e2e/api/`. Importa `test` e `expect` do Playwright e usa o fixture `request`:
+Create (or edit) a file in `tests/e2e/api/`. Import `test` and `expect` from Playwright and use the `request` fixture:
 
 ```typescript
 import { test, expect } from "@playwright/test";
@@ -321,17 +324,17 @@ test.beforeEach(async ({ request }) => {
 
 test.describe("PATCH /api/products/:id", () => {
   test("returns 200 and updates the field", async ({ request }) => {
-    // 1. Obter um produto existente
+    // 1. Get an existing product
     const list = await request.get(BASE);
     const products = await list.json();
     const id = products[0].id;
 
-    // 2. Executar a ação
+    // 2. Execute the action
     const res = await request.patch(`${BASE}/${id}`, {
       data: { price: 99.99 },
     });
 
-    // 3. Validar
+    // 3. Validate
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.price).toBe(99.99);
@@ -349,49 +352,3 @@ test.describe("PATCH /api/products/:id", () => {
   });
 });
 ```
-
-#### 2. Teste de UI
-
-Cria (ou edita) um ficheiro em `tests/e2e/ui/`. Usa os fixtures `page` e `request` em conjunto:
-
-```typescript
-import { test, expect } from "@playwright/test";
-
-test.beforeEach(async ({ request, page }) => {
-  await request.post("/api/products/reset");
-  await page.goto("/products");
-  // Aguardar que os cards carreguem
-  await expect(page.getByRole("heading", { level: 2 }).first()).toBeVisible();
-});
-
-test("mostra o nome do produto no card", async ({ page }) => {
-  // Obter o nome via API para comparar
-  const res = await page.request.get("/api/products");
-  const products = await res.json();
-
-  await expect(
-    page.getByRole("heading", { name: products[0].name }),
-  ).toBeVisible();
-});
-```
-
-#### Boas práticas
-
-- **Usar locators semânticos** (`getByRole`, `getByText`, `getByTitle`) em vez de seletores CSS/XPath — são mais resilientes a mudanças de markup.
-- **Sempre resetar o store** no `beforeEach` para garantir isolamento entre testes.
-- **Não depender da ordem dos testes** — cada teste deve ser autossuficiente.
-- **Preferir `toBeVisible()`** em vez de verificar só a existência no DOM.
-- **Agrupar com `test.describe`** quando há vários cenários para o mesmo endpoint ou funcionalidade.
-
-### Configuração
-
-A configuração está em `playwright.config.ts`:
-
-| Opção               | Valor                    |
-| ------------------- | ------------------------ |
-| `testDir`           | `./tests/e2e`            |
-| `baseURL`           | `https://localhost:3000` |
-| Browser             | Chromium                 |
-| `workers`           | `1` (sequencial)         |
-| `retries` em CI     | `2`                      |
-| HTTPS auto-assinado | ignorado automaticamente |
