@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Product } from "../lib/store";
 import { formatPrice, formatDate } from "../lib/formatters";
 import { useLang, LangSelector } from "../lib/LangContext";
+import { secureFetch } from "../lib/api-secure-client";
 import styles from "@/styles/Products.module.css";
 
 export default function ProductsPage() {
@@ -23,7 +24,7 @@ export default function ProductsPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/products");
+      const res = await secureFetch("/api/products");
       if (!res.ok)
         throw new Error(`${t("errorLoadingProducts")} (${res.status})`);
       const data: Product[] = await res.json();
@@ -47,11 +48,14 @@ export default function ProductsPage() {
   const handleReset = async () => {
     setResetting(true);
     try {
-      await fetch("/api/products/reset", { method: "POST" });
+      const res = await secureFetch("/api/products/reset", { method: "POST" });
+      if (!res.ok) throw new Error(t("unknownError"));
       await fetchProducts();
       setToastMsg(t("storeReset"));
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("unknownError"));
     } finally {
       setResetting(false);
     }
@@ -60,11 +64,16 @@ export default function ProductsPage() {
   const handleDelete = async (id: number) => {
     setDeletingId(id);
     try {
-      await fetch(`/api/products/${id}`, { method: "DELETE" });
+      const res = await secureFetch(`/api/products/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error(t("unknownError"));
       await fetchProducts();
       setToastMsg(t("productRemoved", { id }));
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("unknownError"));
     } finally {
       setDeletingId(null);
     }
@@ -73,9 +82,9 @@ export default function ProductsPage() {
   const handleAddRandom = async () => {
     setAdding(true);
     try {
-      const res = await fetch("/api/products/random", { method: "POST" });
+      const res = await secureFetch("/api/products/random", { method: "POST" });
       if (!res.ok) {
-        const { error } = await res.json();
+        const { error } = (await res.json()) as { error?: string };
         throw new Error(error);
       }
       const created: Product = await res.json();
@@ -83,6 +92,8 @@ export default function ProductsPage() {
       setToastMsg(t("productAdded", { name: created.name }));
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("unknownError"));
     } finally {
       setAdding(false);
     }

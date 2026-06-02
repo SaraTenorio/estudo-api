@@ -98,6 +98,14 @@ cp .env.local.example .env.local
 | `AUTH_USERNAME` | Username de login                                                       |
 | `AUTH_PASSWORD` | Password de login                                                       |
 
+Para as páginas do browser (`/products` e `/products/id`) chamarem os endpoints protegidos diretamente, configure também:
+
+| Variável                    | Descrição                                                             |
+| --------------------------- | --------------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_KEY`       | API key usada pelos pedidos GET no browser                            |
+| `NEXT_PUBLIC_AUTH_USERNAME` | Username usado no browser para obter automaticamente JWT para escrita |
+| `NEXT_PUBLIC_AUTH_PASSWORD` | Password usada no browser para obter automaticamente JWT para escrita |
+
 ### Obter um token JWT
 
 Enviar um `POST` para `/api/auth/login` antes de qualquer operação de escrita:
