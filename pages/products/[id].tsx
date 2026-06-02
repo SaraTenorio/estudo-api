@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import type { Product } from "../../lib/store";
 import { formatPrice, formatDate } from "../../lib/formatters";
 import { useLang, LangSelector } from "../../lib/LangContext";
-import { secureFetch } from "../../lib/api-secure-client";
 import styles from "@/styles/ProductDetail.module.css";
 
 export default function ProductDetailPage() {
@@ -27,12 +26,9 @@ export default function ProductDetailPage() {
       if (showRefreshing) setRefreshing(true);
       else setLoading(true);
       try {
-        const res = await secureFetch(`/api/products/${id}`);
+        const res = await fetch(`/api/products/${id}`);
         if (res.status === 404) {
           setNotFound(true);
-          setProduct(null);
-        } else if (!res.ok) {
-          setNotFound(false);
           setProduct(null);
         } else {
           const data: Product = await res.json();
@@ -55,12 +51,8 @@ export default function ProductDetailPage() {
     if (!id) return;
     setDeleting(true);
     try {
-      const res = await secureFetch(`/api/products/${id}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        router.push("/products");
-      }
+      await fetch(`/api/products/${id}`, { method: "DELETE" });
+      router.push("/products");
     } finally {
       setDeleting(false);
     }
@@ -70,8 +62,9 @@ export default function ProductDetailPage() {
     if (!product) return;
     setToggling(true);
     try {
-      const res = await secureFetch(`/api/products/${id}`, {
+      const res = await fetch(`/api/products/${id}`, {
         method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ active: !product.active }),
       });
       if (res.ok) {
