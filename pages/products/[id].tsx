@@ -8,6 +8,11 @@ import { useLang, LangSelector } from "../../lib/LangContext";
 import { secureFetch } from "../../lib/api-secure-client";
 import styles from "@/styles/ProductDetail.module.css";
 
+async function getApiError(res: Response, fallback: string): Promise<string> {
+  const data = (await res.json().catch(() => ({}))) as { error?: string };
+  return data.error || fallback;
+}
+
 export default function ProductDetailPage() {
   const router = useRouter();
   const { id } = router.query;
@@ -18,6 +23,7 @@ export default function ProductDetailPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [toggling, setToggling] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const { t, locale } = useLang();
 
@@ -59,8 +65,12 @@ export default function ProductDetailPage() {
         method: "DELETE",
       });
       if (res.ok) {
-        router.push("/products");
+        await router.push("/products");
+      } else {
+        setActionError(await getApiError(res, t("unknownError")));
       }
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : t("unknownError"));
     } finally {
       setDeleting(false);
     }
@@ -69,6 +79,7 @@ export default function ProductDetailPage() {
   const handleToggleActive = async () => {
     if (!product) return;
     setToggling(true);
+    setActionError(null);
     try {
       const res = await secureFetch(`/api/products/${id}`, {
         method: "PATCH",
@@ -77,7 +88,11 @@ export default function ProductDetailPage() {
       if (res.ok) {
         const updated: Product = await res.json();
         setProduct(updated);
+      } else {
+        setActionError(await getApiError(res, t("unknownError")));
       }
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : t("unknownError"));
     } finally {
       setToggling(false);
     }
@@ -153,6 +168,7 @@ export default function ProductDetailPage() {
 
               {/* Detail card */}
               <div className={styles.card}>
+                {actionError && <p className={styles.empty}>{actionError}</p>}
                 <div className={styles.section}>
                   <span className={styles.sectionTitle}>
                     {t("identification")}
