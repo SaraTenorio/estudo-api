@@ -5,13 +5,7 @@ import { useRouter } from "next/router";
 import type { Product } from "../../lib/store";
 import { formatPrice, formatDate } from "../../lib/formatters";
 import { useLang, LangSelector } from "../../lib/LangContext";
-import { secureFetch } from "../../lib/api-secure-client";
 import styles from "@/styles/ProductDetail.module.css";
-
-async function getApiError(res: Response, fallback: string): Promise<string> {
-  const data = (await res.json().catch(() => ({}))) as { error?: string };
-  return data.error || fallback;
-}
 
 export default function ProductDetailPage() {
   const router = useRouter();
@@ -23,7 +17,6 @@ export default function ProductDetailPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [toggling, setToggling] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const { t, locale } = useLang();
 
@@ -32,29 +25,22 @@ export default function ProductDetailPage() {
       if (!id) return;
       if (showRefreshing) setRefreshing(true);
       else setLoading(true);
-      setError(null);
       try {
-        const res = await secureFetch(`/api/products/${id}`);
+        const res = await fetch(`/api/products/${id}`);
         if (res.status === 404) {
           setNotFound(true);
           setProduct(null);
-        } else if (!res.ok) {
-          setNotFound(false);
-          setProduct(null);
-          setError(await getApiError(res, t("unknownError")));
         } else {
           const data: Product = await res.json();
           setProduct(data);
           setNotFound(false);
         }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : t("unknownError"));
       } finally {
         setLoading(false);
         setRefreshing(false);
       }
     },
-    [id, t],
+    [id],
   );
 
   useEffect(() => {
@@ -64,17 +50,9 @@ export default function ProductDetailPage() {
   const handleDelete = async () => {
     if (!id) return;
     setDeleting(true);
-    setError(null);
     try {
-      const res = await secureFetch(`/api/products/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) {
-        throw new Error(await getApiError(res, t("unknownError")));
-      }
-      await router.push("/products");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t("unknownError"));
+      await fetch(`/api/products/${id}`, { method: "DELETE" });
+      router.push("/products");
     } finally {
       setDeleting(false);
     }
@@ -83,20 +61,16 @@ export default function ProductDetailPage() {
   const handleToggleActive = async () => {
     if (!product) return;
     setToggling(true);
-    setError(null);
     try {
-      const res = await secureFetch(`/api/products/${id}`, {
+      const res = await fetch(`/api/products/${id}`, {
         method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ active: !product.active }),
       });
       if (res.ok) {
         const updated: Product = await res.json();
         setProduct(updated);
-      } else {
-        throw new Error(await getApiError(res, t("unknownError")));
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t("unknownError"));
     } finally {
       setToggling(false);
     }
@@ -146,8 +120,6 @@ export default function ProductDetailPage() {
 
           {loading ? (
             <p className={styles.empty}>{t("loadingProduct")}</p>
-          ) : error ? (
-            <p className={styles.empty}>{error}</p>
           ) : notFound ? (
             <div className={styles.notFound}>
               <span className={styles.notFoundCode}>404</span>
