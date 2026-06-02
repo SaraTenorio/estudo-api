@@ -3,14 +3,6 @@ const AUTH_USER_ENV = process.env.NEXT_PUBLIC_AUTH_USERNAME;
 const AUTH_PASS_ENV = process.env.NEXT_PUBLIC_AUTH_PASSWORD;
 
 const TOKEN_STORAGE_KEY = "estudo-api.jwt";
-const CREDENTIALS_STORAGE_KEY = "estudo-api.credentials";
-
-type LoginResponse = { token?: string; error?: string };
-
-interface Credentials {
-  username: string;
-  password: string;
-}
 
 function isWriteMethod(method: string): boolean {
   return ["POST", "PUT", "PATCH", "DELETE"].includes(method);
@@ -31,144 +23,36 @@ function clearStoredToken(): void {
   window.localStorage.removeItem(TOKEN_STORAGE_KEY);
 }
 
-function readStoredCredentials(): Credentials | null {
-  if (typeof window === "undefined") return null;
-
-  const raw = window.localStorage.getItem(CREDENTIALS_STORAGE_KEY);
-  if (!raw) return null;
-
-  try {
-    const parsed = JSON.parse(raw) as Partial<Credentials>;
-    if (
-      typeof parsed.username === "string" &&
-      typeof parsed.password === "string" &&
-      parsed.username.trim() &&
-      parsed.password
-    ) {
-      return {
-        username: parsed.username.trim(),
-        password: parsed.password,
-      };
-    }
-  } catch {
-    // Ignore malformed values and force a fresh login prompt.
-  }
-
-  window.localStorage.removeItem(CREDENTIALS_STORAGE_KEY);
-  return null;
-}
-
-function saveStoredCredentials(credentials: Credentials): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(
-    CREDENTIALS_STORAGE_KEY,
-    JSON.stringify(credentials),
-  );
-}
-
-function clearStoredCredentials(): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.removeItem(CREDENTIALS_STORAGE_KEY);
-}
-
-function promptCredentials(): Credentials | null {
-  if (typeof window === "undefined") return null;
-
-  const usernameInput = window.prompt(
-    "Enter the API username used by /api/auth/login:",
-  );
-  if (usernameInput === null) return null;
-
-  const username = usernameInput.trim();
-  if (!username) {
-    throw new Error("Username is required to perform write operations.");
-  }
-
-  const password = window.prompt("Enter the API password:");
-  if (password === null) return null;
-  if (!password) {
-    throw new Error("Password is required to perform write operations.");
-  }
-
-  return { username, password };
-}
-
-async function authenticate(credentials: Credentials): Promise<string> {
-  const res = await fetch("/api/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(credentials),
-  });
-
-  const data = (await res.json().catch(() => ({}))) as LoginResponse;
-
-  if (!res.ok) {
-    throw new Error(data.error || "Unable to authenticate write requests.");
-  }
-
-  if (!data.token) {
-    throw new Error("Authentication response did not include a token.");
-  }
-
-  return data.token;
-}
-
 async function getWriteToken(): Promise<string> {
   const existing = readStoredToken();
   if (existing) return existing;
 
-  const candidates: Credentials[] = [];
-  if (AUTH_USER_ENV && AUTH_PASS_ENV) {
-    candidates.push({ username: AUTH_USER_ENV, password: AUTH_PASS_ENV });
-  }
-
-  const stored = readStoredCredentials();
-  if (stored) {
-    const exists = candidates.some(
-      (candidate) =>
-        candidate.username === stored.username &&
-        candidate.password === stored.password,
+  if (!AUTH_USER_ENV || !AUTH_PASS_ENV) {
+    throw new Error(
+      "Missing write credentials. Configure NEXT_PUBLIC_AUTH_USERNAME and NEXT_PUBLIC_AUTH_PASSWORD.",
     );
-    if (!exists) {
-      candidates.push(stored);
-    }
   }
 
-  let lastError: Error | null = null;
-  for (const candidate of candidates) {
-    try {
-      const token = await authenticate(candidate);
-      saveToken(token);
-      if (!AUTH_USER_ENV || !AUTH_PASS_ENV) {
-        saveStoredCredentials(candidate);
-      }
-      return token;
-    } catch (error) {
-      lastError =
-        error instanceof Error
-          ? error
-          : new Error("Unable to authenticate write requests.");
-      clearStoredCredentials();
-      clearStoredToken();
-    }
+  const res = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: AUTH_USER_ENV,
+      password: AUTH_PASS_ENV,
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Unable to authenticate write requests.");
   }
 
-  const prompted = promptCredentials();
-  if (!prompted) {
-    throw new Error("Write operation cancelled by user.");
+  const data = (await res.json()) as { token?: string };
+  if (!data.token) {
+    throw new Error("Authentication response did not include a token.");
   }
 
-  try {
-    const token = await authenticate(prompted);
-    saveStoredCredentials(prompted);
-    saveToken(token);
-    return token;
-  } catch (error) {
-    clearStoredCredentials();
-    const fallbackMessage =
-      lastError?.message || "Unable to authenticate write requests.";
-    throw error instanceof Error ? error : new Error(fallbackMessage);
-  }
+  saveToken(data.token);
+  return data.token;
 }
 
 function createHeaders(base?: HeadersInit): Headers {

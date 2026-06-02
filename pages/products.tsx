@@ -7,11 +7,6 @@ import { useLang, LangSelector } from "../lib/LangContext";
 import { secureFetch } from "../lib/api-secure-client";
 import styles from "@/styles/Products.module.css";
 
-async function getApiError(res: Response, fallback: string): Promise<string> {
-  const data = (await res.json().catch(() => ({}))) as { error?: string };
-  return data.error || fallback;
-}
-
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +17,6 @@ export default function ProductsPage() {
   const [toastMsg, setToastMsg] = useState("");
   const [adding, setAdding] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [togglingId, setTogglingId] = useState<number | null>(null);
 
   const { t, locale } = useLang();
 
@@ -69,14 +63,11 @@ export default function ProductsPage() {
 
   const handleDelete = async (id: number) => {
     setDeletingId(id);
-    setError(null);
     try {
       const res = await secureFetch(`/api/products/${id}`, {
         method: "DELETE",
       });
-      if (!res.ok) {
-        throw new Error(await getApiError(res, t("unknownError")));
-      }
+      if (!res.ok) throw new Error(t("unknownError"));
       await fetchProducts();
       setToastMsg(t("productRemoved", { id }));
       setShowToast(true);
@@ -90,13 +81,10 @@ export default function ProductsPage() {
 
   const handleAddRandom = async () => {
     setAdding(true);
-    setError(null);
     try {
       const res = await secureFetch("/api/products/random", { method: "POST" });
       if (!res.ok) {
-        const { error } = (await res.json().catch(() => ({}))) as {
-          error?: string;
-        };
+        const { error } = (await res.json()) as { error?: string };
         throw new Error(error);
       }
       const created: Product = await res.json();
@@ -108,39 +96,6 @@ export default function ProductsPage() {
       setError(err instanceof Error ? err.message : t("unknownError"));
     } finally {
       setAdding(false);
-    }
-  };
-
-  const handleToggleActive = async (product: Product) => {
-    setTogglingId(product.id);
-    setError(null);
-
-    try {
-      const res = await secureFetch(`/api/products/${product.id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ active: !product.active }),
-      });
-
-      if (!res.ok) {
-        throw new Error(await getApiError(res, t("unknownError")));
-      }
-
-      const updated: Product = await res.json();
-      setProducts((current) =>
-        current.map((item) => (item.id === updated.id ? updated : item)),
-      );
-
-      setToastMsg(
-        t("statusUpdated", {
-          status: updated.active ? t("active") : t("inactive"),
-        }),
-      );
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2500);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t("unknownError"));
-    } finally {
-      setTogglingId(null);
     }
   };
 
@@ -210,29 +165,9 @@ export default function ProductsPage() {
                         {product.active ? t("active") : t("inactive")}
                       </span>
                       <button
-                        type="button"
-                        className={styles.statusBtn}
-                        onClick={() => handleToggleActive(product)}
-                        disabled={togglingId === product.id}
-                        title={
-                          product.active
-                            ? t("deactivateProductTitle")
-                            : t("activateProductTitle")
-                        }
-                      >
-                        {togglingId === product.id
-                          ? t("updatingStatus")
-                          : product.active
-                            ? t("deactivate")
-                            : t("activate")}
-                      </button>
-                      <button
-                        type="button"
                         className={styles.deleteBtn}
                         onClick={() => handleDelete(product.id)}
-                        disabled={
-                          deletingId === product.id || togglingId === product.id
-                        }
+                        disabled={deletingId === product.id}
                         title={t("removeProductTitle")}
                       >
                         <svg
