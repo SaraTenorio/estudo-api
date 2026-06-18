@@ -41,8 +41,10 @@ export default defineConfig({
     ["json", { outputFile: "test-results/report.json" }],
   ],
   use: {
-    baseURL: "https://localhost:3000",
-    /* Certificado auto-assinado do --experimental-https */
+    baseURL: process.env.CI
+      ? "http://localhost:3000"
+      : "https://localhost:3000",
+    /* Certificado auto-assinado do --experimental-https (local apenas) */
     ignoreHTTPSErrors: true,
     trace: "on-first-retry",
     extraHTTPHeaders: {
@@ -56,9 +58,10 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run dev",
-    url: "https://localhost:3000",
+    command: process.env.CI ? "npm run dev:http" : "npm run dev",
+    url: process.env.CI ? "http://localhost:3000" : "https://localhost:3000",
     reuseExistingServer: !process.env.CI,
     ignoreHTTPSErrors: true,
+    timeout: 120_000,
   },
 });
