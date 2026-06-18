@@ -20,6 +20,7 @@ jobs:
       JWT_SECRET: test-jwt-secret
       BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
       E2E_BLOB_PREFIX: qa-reports/latest
+      MAINTENANCE_MODE: ""
 
     steps:
       - name: Checkout
