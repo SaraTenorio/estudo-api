@@ -36,6 +36,7 @@ Open the browser at the following pages:
 | `https://localhost:3000`             | API endpoint documentation                 |
 | `https://localhost:3000/products`    | Products displayed as cards (UI interface) |
 | `https://localhost:3000/products/id` | Product detail page                        |
+| `https://localhost:3000/qa-report`   | Latest E2E QA report summary               |
 | `https://localhost:3000/sitemap.xml` | XML Sitemap with static pages and products |
 | `https://localhost:3000/feed.xml`    | RSS Feed with all products                 |
 
@@ -304,15 +305,17 @@ The store starts with **2 random products** generated automatically (names, pric
 
 ## Available scripts
 
-| Command                   | Description                                |
-| ------------------------- | ------------------------------------------ |
-| `npm run dev`             | Start the development server (local HTTPS) |
-| `npm run build`           | Compile the project for production         |
-| `npm run start`           | Start the server in production mode        |
-| `npm run lint`            | Run the linter                             |
-| `npm run test:e2e`        | Run all E2E tests with Playwright          |
-| `npm run test:e2e:ui`     | Open the Playwright visual interface       |
-| `npm run test:e2e:report` | Open the HTML report from the last run     |
+| Command                    | Description                                              |
+| -------------------------- | -------------------------------------------------------- |
+| `npm run dev`              | Start the development server (local HTTPS)               |
+| `npm run build`            | Compile the project for production                       |
+| `npm run start`            | Start the server in production mode                      |
+| `npm run lint`             | Run the linter                                           |
+| `npm run test:e2e`         | Run all E2E tests with Playwright                        |
+| `npm run test:e2e:ui`      | Open the Playwright visual interface                     |
+| `npm run test:e2e:report`  | Open the HTML report from the last run                   |
+| `npm run test:e2e:summary` | Build a compact JSON summary from Playwright JSON output |
+| `npm run test:e2e:publish` | Publish Playwright HTML report + summary to Vercel Blob  |
 
 ---
 
@@ -343,6 +346,39 @@ npm run test:e2e:ui
 # View the HTML report from the last run
 npm run test:e2e:report
 ```
+
+---
+
+## Live QA report page (Vercel)
+
+This project includes a live QA page at `/qa-report` that displays the latest E2E execution status.
+
+### Architecture
+
+- Playwright runs in GitHub Actions (`.github/workflows/e2e-report.yml`)
+- CI generates:
+  - HTML report (`playwright-report/`)
+  - JSON summary (`test-results/summary.json`)
+- CI publishes both to Vercel Blob (`qa-reports/latest/...`)
+- `/qa-report` reads the summary from `QA_REPORT_SUMMARY_URL`
+
+### Required environment variable (Vercel)
+
+Set this variable in your Vercel project:
+
+```env
+QA_REPORT_SUMMARY_URL=https://<your-blob-store>.public.blob.vercel-storage.com/qa-reports/latest/summary.json
+```
+
+### Required GitHub secret
+
+Add this secret to your repository:
+
+```env
+BLOB_READ_WRITE_TOKEN=<vercel_blob_read_write_token>
+```
+
+After each run, the workflow uploads a fresh summary and HTML report and the live page reflects the latest published state.
 
 > Playwright starts the `npm run dev` server automatically before tests and reuses it if already running (`reuseExistingServer: true` in dev). Tests run sequentially (`workers: 1`) because the store is shared in memory.
 

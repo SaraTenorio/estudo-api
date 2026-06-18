@@ -173,16 +173,35 @@ export default function Home() {
               🔒 {t("authHint")}
             </p>
             <div className={styles.navRow}>
-              <Link
-                href="/products"
+              <div
                 style={{
-                  fontSize: 14,
-                  color: "#58a6ff",
-                  textDecoration: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                  flexWrap: "wrap",
                 }}
               >
-                {t("viewCards")}
-              </Link>
+                <Link
+                  href="/products"
+                  style={{
+                    fontSize: 14,
+                    color: "#58a6ff",
+                    textDecoration: "none",
+                  }}
+                >
+                  {t("viewCards")}
+                </Link>
+                <Link
+                  href="/qa-report"
+                  style={{
+                    fontSize: 14,
+                    color: "#58a6ff",
+                    textDecoration: "none",
+                  }}
+                >
+                  {t("viewQaReport")}
+                </Link>
+              </div>
               <div className={styles.metaLinks}>
                 <a
                   href="/sitemap.xml"

@@ -1,0 +1,66 @@
+name: E2E Report
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  e2e-report:
+    runs-on: ubuntu-latest
+
+    env:
+      API_KEY: test-api-key
+      NEXT_PUBLIC_API_KEY: test-api-key
+      AUTH_USERNAME: admin
+      AUTH_PASSWORD: password
+      NEXT_PUBLIC_AUTH_USERNAME: admin
+      NEXT_PUBLIC_AUTH_PASSWORD: password
+      JWT_SECRET: test-jwt-secret
+      BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+      E2E_BLOB_PREFIX: qa-reports/latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        id: e2e
+        continue-on-error: true
+        run: npm run test:e2e
+
+      - name: Generate E2E summary JSON
+        if: always()
+        run: npm run test:e2e:summary
+
+      - name: Publish report to Vercel Blob
+        if: always()
+        run: npm run test:e2e:publish
+
+      - name: Upload workflow artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report
+          path: |
+            playwright-report
+            test-results/report.json
+            test-results/summary.json
+          if-no-files-found: warn
+
+      - name: Fail workflow if tests failed
+        if: steps.e2e.outcome == 'failure'
+        run: exit 1

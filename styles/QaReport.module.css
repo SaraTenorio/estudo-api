@@ -1,0 +1,192 @@
+.page {
+    --background: #0d1117;
+    --foreground: #161b22;
+    --border: #30363d;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+
+    display: flex;
+    min-height: 100vh;
+    align-items: flex-start;
+    justify-content: center;
+    background-color: var(--background);
+    font-family: var(--font-geist-sans);
+}
+
+.main {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    max-width: 860px;
+    flex-direction: column;
+    gap: 24px;
+    padding: 60px 48px;
+    background-color: var(--foreground);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.backLink {
+    font-size: 14px;
+    color: #58a6ff;
+    text-decoration: none;
+}
+
+.title {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 32px;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -1px;
+    flex: 1;
+}
+
+.card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #0d1117;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.statusRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.statusPass,
+.statusFail {
+    font-family: var(--font-geist-mono);
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 4px 10px;
+}
+
+.statusPass {
+    background: rgba(73, 204, 144, 0.16);
+    color: #49cc90;
+    border: 1px solid rgba(73, 204, 144, 0.45);
+}
+
+.statusFail {
+    background: rgba(249, 62, 62, 0.16);
+    color: #f93e3e;
+    border: 1px solid rgba(249, 62, 62, 0.45);
+}
+
+.metricsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.metricBox {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    background: #161b22;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.metricLabel {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.metricValue {
+    font-size: 24px;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.metaGrid {
+    display: grid;
+    gap: 8px;
+}
+
+.metaRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px dashed #2b3138;
+    padding-bottom: 8px;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.commitText {
+    font-family: var(--font-geist-mono);
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.actionLink {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgba(88, 166, 255, 0.4);
+    color: #58a6ff;
+    background: rgba(88, 166, 255, 0.08);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 8px;
+}
+
+.actionLink:hover {
+    background: rgba(88, 166, 255, 0.16);
+}
+
+.errorText {
+    margin: 0;
+    color: #f93e3e;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.hintText,
+.detailText {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+@media (max-width: 760px) {
+    .main {
+        padding: 32px 20px;
+    }
+
+    .metricsGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .title {
+        font-size: 26px;
+    }
+}

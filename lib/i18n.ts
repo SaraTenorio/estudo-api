@@ -10,6 +10,7 @@ export const translations = {
     callsHint:
       "Each API call modifies the in-memory store — create, edit or delete products here and see the result reflected in real time on the cards page.",
     viewCards: "View products as cards →",
+    viewQaReport: "View test report →",
     copyPath: "Copy path",
     copyBody: "Copy body",
     // endpoint groups
@@ -91,6 +92,22 @@ export const translations = {
     notFoundMessage:
       "The page you are looking for does not exist or has been moved.",
     notFoundBackHome: "← Back to home",
+    // qa report page
+    qaReportPageTitle: "QA Test Report | Estudo API",
+    qaReportMetaDesc: "Latest end-to-end test execution summary",
+    qaReportHeading: "QA Test Report",
+    qaReportLastUpdated: "Last updated",
+    qaReportStatus: "Status",
+    qaReportPassed: "Passed",
+    qaReportFailed: "Failed",
+    qaReportFlaky: "Flaky",
+    qaReportSkipped: "Skipped",
+    qaReportDuration: "Duration",
+    qaReportOpenHtml: "Open full HTML report",
+    qaReportOpenRun: "Open CI run",
+    qaReportUnavailable: "QA report is not available yet.",
+    qaReportConfigHint:
+      "Set QA_REPORT_SUMMARY_URL in the environment and publish reports from CI.",
   },
   pt: {
     // meta
@@ -101,6 +118,7 @@ export const translations = {
     callsHint:
       "Cada chamada à API modifica o store em memória — crie, edite ou apague produtos aqui e veja o resultado reflectido em tempo real na página de cards.",
     viewCards: "Ver produtos em cards →",
+    viewQaReport: "Ver relatório de testes →",
     copyPath: "Copiar path",
     copyBody: "Copiar body",
     // endpoint groups
@@ -182,6 +200,22 @@ export const translations = {
     notFoundHeading: "Página Não Encontrada",
     notFoundMessage: "A página que procura não existe ou foi movida.",
     notFoundBackHome: "← Voltar ao início",
+    // qa report page
+    qaReportPageTitle: "Relatório de Testes QA | Estudo API",
+    qaReportMetaDesc: "Resumo da execução mais recente dos testes end-to-end",
+    qaReportHeading: "Relatório de Testes QA",
+    qaReportLastUpdated: "Última atualização",
+    qaReportStatus: "Estado",
+    qaReportPassed: "Passaram",
+    qaReportFailed: "Falharam",
+    qaReportFlaky: "Instáveis",
+    qaReportSkipped: "Ignorados",
+    qaReportDuration: "Duração",
+    qaReportOpenHtml: "Abrir relatório HTML completo",
+    qaReportOpenRun: "Abrir execução no CI",
+    qaReportUnavailable: "O relatório de QA ainda não está disponível.",
+    qaReportConfigHint:
+      "Defina QA_REPORT_SUMMARY_URL no ambiente e publique os relatórios via CI.",
   },
 } as const;
 

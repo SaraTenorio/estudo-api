@@ -36,7 +36,10 @@ export default defineConfig({
   workers: 1,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  reporter: [["html", { open: "never" }]],
+  reporter: [
+    ["html", { open: "never" }],
+    ["json", { outputFile: "test-results/report.json" }],
+  ],
   use: {
     baseURL: "https://localhost:3000",
     /* Certificado auto-assinado do --experimental-https */

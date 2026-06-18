@@ -36,6 +36,7 @@ Abre o browser nas seguintes páginas:
 | `https://localhost:3000`             | Documentação dos endpoints da API                 |
 | `https://localhost:3000/products`    | Visualização dos produtos em cards (interface UI) |
 | `https://localhost:3000/products/id` | Página de detalhes de um produto                  |
+| `https://localhost:3000/qa-report`   | Resumo mais recente dos testes E2E                |
 | `https://localhost:3000/sitemap.xml` | Sitemap XML com páginas estáticas e produtos      |
 | `https://localhost:3000/feed.xml`    | RSS Feed com todos os produtos                    |
 
@@ -304,19 +305,54 @@ O store arranca com **2 produtos aleatórios** gerados automaticamente (nomes, p
 
 ## Scripts disponíveis
 
-| Comando                   | Descrição                                          |
-| ------------------------- | -------------------------------------------------- |
-| `npm run dev`             | Inicia o servidor de desenvolvimento (HTTPS local) |
-| `npm run build`           | Compila o projeto para produção                    |
-| `npm run start`           | Inicia o servidor em modo produção                 |
-| `npm run lint`            | Corre o linter                                     |
-| `npm run test:e2e`        | Corre todos os testes E2E com Playwright           |
-| `npm run test:e2e:ui`     | Abre a interface visual do Playwright              |
-| `npm run test:e2e:report` | Abre o relatório HTML do último run                |
+| Comando                    | Descrição                                                     |
+| -------------------------- | ------------------------------------------------------------- |
+| `npm run dev`              | Inicia o servidor de desenvolvimento (HTTPS local)            |
+| `npm run build`            | Compila o projeto para produção                               |
+| `npm run start`            | Inicia o servidor em modo produção                            |
+| `npm run lint`             | Corre o linter                                                |
+| `npm run test:e2e`         | Corre todos os testes E2E com Playwright                      |
+| `npm run test:e2e:ui`      | Abre a interface visual do Playwright                         |
+| `npm run test:e2e:report`  | Abre o relatório HTML do último run                           |
+| `npm run test:e2e:summary` | Gera um resumo JSON compacto a partir do output do Playwright |
+| `npm run test:e2e:publish` | Publica relatório HTML + resumo no Vercel Blob                |
 
 ---
 
 ## Testes E2E com Playwright
+
+---
+
+## Página live de relatório QA (Vercel)
+
+O projeto inclui a página `/qa-report`, que mostra o estado da execução E2E mais recente.
+
+### Arquitetura
+
+- Os testes Playwright correm no GitHub Actions (`.github/workflows/e2e-report.yml`)
+- O CI gera:
+  - Relatório HTML (`playwright-report/`)
+  - Resumo JSON (`test-results/summary.json`)
+- O CI publica ambos no Vercel Blob (`qa-reports/latest/...`)
+- A página `/qa-report` lê o resumo a partir de `QA_REPORT_SUMMARY_URL`
+
+### Variável de ambiente necessária (Vercel)
+
+Define esta variável no projeto Vercel:
+
+```env
+QA_REPORT_SUMMARY_URL=https://<teu-blob-store>.public.blob.vercel-storage.com/qa-reports/latest/summary.json
+```
+
+### Secret necessário no GitHub
+
+Adiciona este secret no repositório:
+
+```env
+BLOB_READ_WRITE_TOKEN=<vercel_blob_read_write_token>
+```
+
+Após cada execução, o workflow publica um resumo/relatório novo e a página live passa a refletir o estado mais recente.
 
 Os testes estão em `tests/e2e/` e cobrem as camadas de API e UI.
 

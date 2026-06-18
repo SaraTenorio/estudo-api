@@ -9,7 +9,9 @@
     "lint": "next lint",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:summary": "node scripts/generate-e2e-summary.mjs",
+    "test:e2e:publish": "node scripts/publish-e2e-report-blob.mjs"
   },
   "dependencies": {
     "jsonwebtoken": "^9.0.3",
