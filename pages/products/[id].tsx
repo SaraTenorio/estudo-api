@@ -107,7 +107,7 @@ export default function ProductDetailPage() {
   return (
     <>
       <Head>
-        <title>{title} | Estudo API</title>
+        <title>{`${title} | Estudo API`}</title>
         <meta
           name="description"
           content={

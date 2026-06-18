@@ -58,10 +58,10 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: process.env.CI ? "npm run dev:http" : "npm run dev",
+    command: process.env.CI ? "npm run start:e2e" : "npm run dev",
     url: process.env.CI ? "http://localhost:3000" : "https://localhost:3000",
     reuseExistingServer: !process.env.CI,
     ignoreHTTPSErrors: true,
-    timeout: 120_000,
+    timeout: 300_000,
   },
 });
