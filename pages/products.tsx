@@ -5,6 +5,10 @@ import type { Product } from "../lib/store";
 import { formatPrice, formatDate } from "../lib/formatters";
 import { useLang, LangSelector } from "../lib/LangContext";
 import { fetchWithSecurity, clearCachedJwtToken } from "../lib/client-auth";
+import {
+  localizeProductName,
+  localizeProductText,
+} from "../lib/product-text-localization";
 import styles from "@/styles/Products.module.css";
 
 export default function ProductsPage() {
@@ -18,7 +22,11 @@ export default function ProductsPage() {
   const [adding, setAdding] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  const { t, locale } = useLang();
+  const { t, locale, lang } = useLang();
+
+  const localizedProducts = products.map((product) =>
+    localizeProductText(product, lang),
+  );
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -111,7 +119,9 @@ export default function ProductsPage() {
       }
       const created: Product = await res.json();
       await fetchProducts();
-      setToastMsg(t("productAdded", { name: created.name }));
+      setToastMsg(
+        t("productAdded", { name: localizeProductName(created.name, lang) }),
+      );
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2500);
     } catch (err) {
@@ -176,11 +186,11 @@ export default function ProductsPage() {
             <p className={styles.empty}>{t("loadingProducts")}</p>
           ) : error ? (
             <p className={styles.empty}>{error}</p>
-          ) : products.length === 0 ? (
+          ) : localizedProducts.length === 0 ? (
             <p className={styles.empty}>{t("noProducts")}</p>
           ) : (
             <div className={styles.grid}>
-              {products.map((product) => (
+              {localizedProducts.map((product) => (
                 <div key={product.id} className={styles.card}>
                   <div className={styles.cardHeader}>
                     <h2 className={styles.cardName}>{product.name}</h2>

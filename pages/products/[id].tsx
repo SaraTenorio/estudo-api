@@ -6,6 +6,7 @@ import type { Product } from "../../lib/store";
 import { formatPrice, formatDate } from "../../lib/formatters";
 import { useLang, LangSelector } from "../../lib/LangContext";
 import { fetchWithSecurity, clearCachedJwtToken } from "../../lib/client-auth";
+import { localizeProductText } from "../../lib/product-text-localization";
 import styles from "@/styles/ProductDetail.module.css";
 
 export default function ProductDetailPage() {
@@ -19,7 +20,9 @@ export default function ProductDetailPage() {
   const [deleting, setDeleting] = useState(false);
   const [toggling, setToggling] = useState(false);
 
-  const { t, locale } = useLang();
+  const { t, locale, lang } = useLang();
+
+  const localizedProduct = product ? localizeProductText(product, lang) : null;
 
   const fetchProduct = useCallback(
     async (showRefreshing = false) => {
@@ -97,8 +100,8 @@ export default function ProductDetailPage() {
 
   const title = notFound
     ? t("notFoundTitle")
-    : product
-      ? product.name
+    : localizedProduct
+      ? localizedProduct.name
       : "Estudo API";
 
   return (
@@ -157,20 +160,22 @@ export default function ProductDetailPage() {
               <h1 className={styles.notFoundTitle}>{t("notFoundHeading")}</h1>
               <p>{t("notFoundMessage")}</p>
             </div>
-          ) : product ? (
+          ) : localizedProduct ? (
             <>
               {/* Title row */}
               <div className={styles.titleRow}>
-                <h1 className={styles.title}>{product.name}</h1>
+                <h1 className={styles.title}>{localizedProduct.name}</h1>
                 <span
-                  className={`${styles.badge} ${product.active ? styles.badgeActive : styles.badgeInactive}`}
+                  className={`${styles.badge} ${localizedProduct.active ? styles.badgeActive : styles.badgeInactive}`}
                 >
-                  {product.active ? t("active") : t("inactive")}
+                  {localizedProduct.active ? t("active") : t("inactive")}
                 </span>
               </div>
 
-              {product.description && (
-                <p className={styles.description}>{product.description}</p>
+              {localizedProduct.description && (
+                <p className={styles.description}>
+                  {localizedProduct.description}
+                </p>
               )}
 
               {/* Detail card */}
@@ -181,11 +186,13 @@ export default function ProductDetailPage() {
                   </span>
                   <div className={styles.row}>
                     <span className={styles.label}>{t("labelId")}</span>
-                    <span className={styles.value}>#{product.id}</span>
+                    <span className={styles.value}>#{localizedProduct.id}</span>
                   </div>
                   <div className={styles.row}>
                     <span className={styles.label}>{t("labelName")}</span>
-                    <span className={styles.value}>{product.name}</span>
+                    <span className={styles.value}>
+                      {localizedProduct.name}
+                    </span>
                   </div>
                 </div>
 
@@ -196,26 +203,28 @@ export default function ProductDetailPage() {
                   <div className={styles.row}>
                     <span className={styles.label}>{t("labelPrice")}</span>
                     <span className={`${styles.value} ${styles.price}`}>
-                      {formatPrice(product.price, locale)}
+                      {formatPrice(localizedProduct.price, locale)}
                     </span>
                   </div>
                   <div className={styles.row}>
                     <span className={styles.label}>{t("labelQuantity")}</span>
-                    <span className={styles.value}>{product.quantity}</span>
+                    <span className={styles.value}>
+                      {localizedProduct.quantity}
+                    </span>
                   </div>
                   <div className={styles.row}>
                     <span className={styles.label}>{t("labelStatus")}</span>
                     <label
                       className={styles.toggle}
                       title={t("toggleTitle", {
-                        action: product.active
+                        action: localizedProduct.active
                           ? t("deactivate")
                           : t("activate"),
                       })}
                     >
                       <input
                         type="checkbox"
-                        checked={product.active}
+                        checked={localizedProduct.active}
                         disabled={toggling}
                         onChange={handleToggleActive}
                       />
@@ -223,11 +232,11 @@ export default function ProductDetailPage() {
                         <span className={styles.toggleThumb} />
                       </span>
                       <span
-                        className={`${styles.toggleLabel} ${product.active ? styles.toggleLabelOn : styles.toggleLabelOff}`}
+                        className={`${styles.toggleLabel} ${localizedProduct.active ? styles.toggleLabelOn : styles.toggleLabelOff}`}
                       >
                         {toggling
                           ? "…"
-                          : product.active
+                          : localizedProduct.active
                             ? t("active")
                             : t("inactive")}
                       </span>
@@ -242,7 +251,7 @@ export default function ProductDetailPage() {
                   <div className={styles.row}>
                     <span className={styles.label}>{t("labelCreatedAt")}</span>
                     <span className={styles.value}>
-                      {formatDate(product.createdAt, true, locale)}
+                      {formatDate(localizedProduct.createdAt, true, locale)}
                     </span>
                   </div>
                   <div className={styles.row}>
@@ -250,7 +259,7 @@ export default function ProductDetailPage() {
                       {t("labelCreatedAtIso")}
                     </span>
                     <span className={`${styles.value} ${styles.mono}`}>
-                      {product.createdAt}
+                      {localizedProduct.createdAt}
                     </span>
                   </div>
                 </div>
@@ -259,10 +268,10 @@ export default function ProductDetailPage() {
               {/* Raw JSON */}
               <div className={styles.jsonBlock}>
                 <span className={styles.jsonLabel}>
-                  GET /api/products/{product.id}
+                  GET /api/products/{localizedProduct.id}
                 </span>
                 <pre className={styles.pre}>
-                  {JSON.stringify(product, null, 2)}
+                  {JSON.stringify(localizedProduct, null, 2)}
                 </pre>
               </div>
             </>
