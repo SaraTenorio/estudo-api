@@ -1,6 +1,9 @@
 import { test, expect } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("estudo-api-lang", "pt");
+  });
   await page.goto("/maintenance");
 });
 
@@ -10,7 +13,7 @@ test.beforeEach(async ({ page }) => {
 test.describe("Maintenance page — content", () => {
   test("shows a maintenance heading", async ({ page }) => {
     await expect(
-      page.getByRole("heading", { name: /manutencão|maintenance/i }),
+      page.getByRole("heading", { name: /manutenção|maintenance/i }),
     ).toBeVisible();
   });
 
@@ -53,7 +56,7 @@ test.describe("Maintenance page — navigation", () => {
 test.describe("Maintenance page — language selector", () => {
   test("language selector is visible", async ({ page }) => {
     // The LangSelector renders EN and PT buttons
-    await expect(page.getByRole("button", { name: "EN" })).toBeVisible();
+    await expect(page.getByTitle("English")).toBeVisible();
   });
 
   test("switching to EN changes the heading language", async ({ page }) => {
@@ -62,7 +65,7 @@ test.describe("Maintenance page — language selector", () => {
       page.getByRole("heading", { name: /Manutenção/i }),
     ).toBeVisible();
 
-    await page.getByRole("button", { name: "EN" }).click();
+    await page.getByTitle("English").click();
 
     await expect(
       page.getByRole("heading", { name: /Maintenance/i }),

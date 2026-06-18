@@ -1,10 +1,13 @@
 import { test, expect } from "@playwright/test";
 import { MSG } from "../../../lib/messages";
+import { getAuthHeaders } from "../helpers/auth";
 
 const BASE = "/api/products";
+let authHeaders: Record<string, string>;
 
 test.beforeEach(async ({ request }) => {
-  await request.post(`${BASE}/reset`);
+  authHeaders = await getAuthHeaders(request);
+  await request.post(`${BASE}/reset`, { headers: authHeaders });
 });
 
 // ---------------------------------------------------------------------------
@@ -41,6 +44,7 @@ test.describe("POST /api/products", () => {
     request,
   }) => {
     const res = await request.post(BASE, {
+      headers: authHeaders,
       data: { name: "Test Product", price: 9.99, quantity: 3 },
     });
 
@@ -55,6 +59,7 @@ test.describe("POST /api/products", () => {
 
   test("applies defaults for omitted fields", async ({ request }) => {
     const res = await request.post(BASE, {
+      headers: authHeaders,
       data: { name: "Name Only" },
     });
 
@@ -69,6 +74,7 @@ test.describe("POST /api/products", () => {
 
   test("returns 400 when name is missing", async ({ request }) => {
     const res = await request.post(BASE, {
+      headers: authHeaders,
       data: { price: 10 },
     });
 
@@ -79,6 +85,7 @@ test.describe("POST /api/products", () => {
 
   test("returns 400 when name is whitespace-only", async ({ request }) => {
     const res = await request.post(BASE, {
+      headers: authHeaders,
       data: { name: "   " },
     });
 
@@ -89,6 +96,7 @@ test.describe("POST /api/products", () => {
 
   test("returns 400 for unknown field", async ({ request }) => {
     const res = await request.post(BASE, {
+      headers: authHeaders,
       data: { name: "X", unknownField: true },
     });
 
@@ -105,7 +113,10 @@ test.describe("POST /api/products", () => {
     request,
   }) => {
     const res = await request.post(BASE, {
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+      },
       data: "[1, 2, 3]",
     });
 
@@ -120,7 +131,10 @@ test.describe("POST /api/products", () => {
     // Without Content-Type the body parser does not process the body → req.body = {}
     // withJsonBody lets it through (non-null object) → validation fails with NAME_REQUIRED
     const res = await request.post(BASE, {
-      headers: { "Content-Type": "text/plain" },
+      headers: {
+        ...authHeaders,
+        "Content-Type": "text/plain",
+      },
       data: "invalid data",
     });
 
@@ -130,7 +144,7 @@ test.describe("POST /api/products", () => {
   });
 
   test("returns 405 for DELETE method on collection", async ({ request }) => {
-    const res = await request.delete(BASE);
+    const res = await request.delete(BASE, { headers: authHeaders });
 
     expect(res.status()).toBe(405);
     const body = await res.json();
@@ -180,6 +194,7 @@ test.describe("PUT /api/products/:id", () => {
     const { id } = list[0];
 
     const res = await request.put(`${BASE}/${id}`, {
+      headers: authHeaders,
       data: { name: "Replaced Product", price: 1.5 },
     });
 
@@ -196,6 +211,7 @@ test.describe("PUT /api/products/:id", () => {
     const { id } = list[0];
 
     const res = await request.put(`${BASE}/${id}`, {
+      headers: authHeaders,
       data: { price: 5 },
     });
 
@@ -206,6 +222,7 @@ test.describe("PUT /api/products/:id", () => {
 
   test("returns 404 for non-existent id", async ({ request }) => {
     const res = await request.put(`${BASE}/99999`, {
+      headers: authHeaders,
       data: { name: "X" },
     });
 
@@ -224,6 +241,7 @@ test.describe("PATCH /api/products/:id", () => {
     const first = list[0];
 
     const res = await request.patch(`${BASE}/${first.id}`, {
+      headers: authHeaders,
       data: { price: 42.5 },
     });
 
@@ -238,6 +256,7 @@ test.describe("PATCH /api/products/:id", () => {
     const first = list[0];
 
     const res = await request.patch(`${BASE}/${first.id}`, {
+      headers: authHeaders,
       data: { active: !first.active },
     });
 
@@ -251,6 +270,7 @@ test.describe("PATCH /api/products/:id", () => {
     const { id } = list[0];
 
     const res = await request.patch(`${BASE}/${id}`, {
+      headers: authHeaders,
       data: { unknownField: "x" },
     });
 
@@ -268,7 +288,7 @@ test.describe("DELETE /api/products/:id", () => {
     const list = await (await request.get(BASE)).json();
     const { id } = list[0];
 
-    const res = await request.delete(`${BASE}/${id}`);
+    const res = await request.delete(`${BASE}/${id}`, { headers: authHeaders });
 
     expect(res.status()).toBe(200);
     const body = await res.json();
@@ -279,14 +299,16 @@ test.describe("DELETE /api/products/:id", () => {
     const list = await (await request.get(BASE)).json();
     const { id } = list[0];
 
-    await request.delete(`${BASE}/${id}`);
+    await request.delete(`${BASE}/${id}`, { headers: authHeaders });
     const check = await request.get(`${BASE}/${id}`);
 
     expect(check.status()).toBe(404);
   });
 
   test("returns 404 for non-existent id", async ({ request }) => {
-    const res = await request.delete(`${BASE}/99999`);
+    const res = await request.delete(`${BASE}/99999`, {
+      headers: authHeaders,
+    });
 
     expect(res.status()).toBe(404);
   });
@@ -297,7 +319,9 @@ test.describe("DELETE /api/products/:id", () => {
 // ---------------------------------------------------------------------------
 test.describe("POST /api/products/random", () => {
   test("creates a random product and returns 201", async ({ request }) => {
-    const res = await request.post(`${BASE}/random`);
+    const res = await request.post(`${BASE}/random`, {
+      headers: authHeaders,
+    });
 
     expect(res.status()).toBe(201);
     const body = await res.json();
@@ -322,10 +346,10 @@ test.describe("POST /api/products/random", () => {
 test.describe("POST /api/products/reset", () => {
   test("resets the store to exactly 2 products", async ({ request }) => {
     // Add extra products to ensure the reset clears state
-    await request.post(`${BASE}/random`);
-    await request.post(`${BASE}/random`);
+    await request.post(`${BASE}/random`, { headers: authHeaders });
+    await request.post(`${BASE}/random`, { headers: authHeaders });
 
-    const res = await request.post(`${BASE}/reset`);
+    const res = await request.post(`${BASE}/reset`, { headers: authHeaders });
 
     expect(res.status()).toBe(200);
     const after = await (await request.get(BASE)).json();

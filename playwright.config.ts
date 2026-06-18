@@ -1,4 +1,33 @@
 import { defineConfig, devices } from "@playwright/test";
+import fs from "fs";
+import path from "path";
+
+function loadEnvFile(filePath: string): void {
+  if (!fs.existsSync(filePath)) return;
+
+  const content = fs.readFileSync(filePath, "utf8");
+  const lines = content.split(/\r?\n/);
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#")) continue;
+
+    const equalsIndex = line.indexOf("=");
+    if (equalsIndex <= 0) continue;
+
+    const key = line.slice(0, equalsIndex).trim();
+    const value = line.slice(equalsIndex + 1).trim();
+
+    // Keep already-defined environment values (CI secrets, shell overrides)
+    if (!(key in process.env)) {
+      process.env[key] = value;
+    }
+  }
+}
+
+const workspaceRoot = __dirname;
+loadEnvFile(path.join(workspaceRoot, ".env.local"));
+loadEnvFile(path.join(workspaceRoot, ".env"));
 
 export default defineConfig({
   testDir: "./tests/e2e",

@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { getAuthHeaders } from "../helpers/auth";
 
 const BASE = "/api/products";
 
@@ -114,7 +115,10 @@ test.describe("POST /api/products — created product schema", () => {
   test("created product contains all expected fields with correct types", async ({
     request,
   }) => {
+    const authHeaders = await getAuthHeaders(request);
+
     const res = await request.post(BASE, {
+      headers: authHeaders,
       data: { name: "Schema Test Product", price: 5.5, quantity: 2 },
     });
 

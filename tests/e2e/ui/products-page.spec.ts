@@ -1,7 +1,11 @@
 import { test, expect } from "@playwright/test";
+import { resetProductsStore } from "../helpers/auth";
 
 test.beforeEach(async ({ request, page }) => {
-  await request.post("/api/products/reset");
+  await resetProductsStore(request);
+  await page.addInitScript(() => {
+    localStorage.setItem("estudo-api-lang", "pt");
+  });
   await page.goto("/products");
   // Wait for product cards to load
   await expect(page.getByRole("heading", { level: 2 }).first()).toBeVisible();
