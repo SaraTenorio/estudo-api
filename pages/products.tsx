@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Product } from "../lib/store";
 import { formatPrice, formatDate } from "../lib/formatters";
 import { useLang, LangSelector } from "../lib/LangContext";
+import { fetchWithSecurity, clearCachedJwtToken } from "../lib/client-auth";
 import styles from "@/styles/Products.module.css";
 
 export default function ProductsPage() {
@@ -23,7 +24,7 @@ export default function ProductsPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/products");
+      const res = await fetchWithSecurity("/api/products");
       if (!res.ok)
         throw new Error(`${t("errorLoadingProducts")} (${res.status})`);
       const data: Product[] = await res.json();
@@ -47,11 +48,25 @@ export default function ProductsPage() {
   const handleReset = async () => {
     setResetting(true);
     try {
-      await fetch("/api/products/reset", { method: "POST" });
+      const res = await fetchWithSecurity("/api/products/reset", {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const body = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(body?.error ?? `${t("unknownError")} (${res.status})`);
+      }
       await fetchProducts();
       setToastMsg(t("storeReset"));
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2500);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t("unknownError");
+      setToastMsg(message);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2500);
+      clearCachedJwtToken();
     } finally {
       setResetting(false);
     }
@@ -60,11 +75,25 @@ export default function ProductsPage() {
   const handleDelete = async (id: number) => {
     setDeletingId(id);
     try {
-      await fetch(`/api/products/${id}`, { method: "DELETE" });
+      const res = await fetchWithSecurity(`/api/products/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const body = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(body?.error ?? `${t("unknownError")} (${res.status})`);
+      }
       await fetchProducts();
       setToastMsg(t("productRemoved", { id }));
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2500);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t("unknownError");
+      setToastMsg(message);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2500);
+      clearCachedJwtToken();
     } finally {
       setDeletingId(null);
     }
@@ -73,7 +102,9 @@ export default function ProductsPage() {
   const handleAddRandom = async () => {
     setAdding(true);
     try {
-      const res = await fetch("/api/products/random", { method: "POST" });
+      const res = await fetchWithSecurity("/api/products/random", {
+        method: "POST",
+      });
       if (!res.ok) {
         const { error } = await res.json();
         throw new Error(error);
@@ -83,6 +114,12 @@ export default function ProductsPage() {
       setToastMsg(t("productAdded", { name: created.name }));
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2500);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t("unknownError");
+      setToastMsg(message);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2500);
+      clearCachedJwtToken();
     } finally {
       setAdding(false);
     }

@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import type { Product } from "../../lib/store";
 import { formatPrice, formatDate } from "../../lib/formatters";
 import { useLang, LangSelector } from "../../lib/LangContext";
+import { fetchWithSecurity, clearCachedJwtToken } from "../../lib/client-auth";
 import styles from "@/styles/ProductDetail.module.css";
 
 export default function ProductDetailPage() {
@@ -26,15 +27,22 @@ export default function ProductDetailPage() {
       if (showRefreshing) setRefreshing(true);
       else setLoading(true);
       try {
-        const res = await fetch(`/api/products/${id}`);
+        const res = await fetchWithSecurity(`/api/products/${id}`);
         if (res.status === 404) {
           setNotFound(true);
+          setProduct(null);
+        } else if (!res.ok) {
+          setNotFound(false);
           setProduct(null);
         } else {
           const data: Product = await res.json();
           setProduct(data);
           setNotFound(false);
         }
+      } catch {
+        clearCachedJwtToken();
+        setNotFound(false);
+        setProduct(null);
       } finally {
         setLoading(false);
         setRefreshing(false);
@@ -51,8 +59,15 @@ export default function ProductDetailPage() {
     if (!id) return;
     setDeleting(true);
     try {
-      await fetch(`/api/products/${id}`, { method: "DELETE" });
+      const res = await fetchWithSecurity(`/api/products/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        throw new Error(`Delete failed (${res.status})`);
+      }
       router.push("/products");
+    } catch {
+      clearCachedJwtToken();
     } finally {
       setDeleting(false);
     }
@@ -62,7 +77,7 @@ export default function ProductDetailPage() {
     if (!product) return;
     setToggling(true);
     try {
-      const res = await fetch(`/api/products/${id}`, {
+      const res = await fetchWithSecurity(`/api/products/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ active: !product.active }),
@@ -70,13 +85,21 @@ export default function ProductDetailPage() {
       if (res.ok) {
         const updated: Product = await res.json();
         setProduct(updated);
+      } else {
+        clearCachedJwtToken();
       }
+    } catch {
+      clearCachedJwtToken();
     } finally {
       setToggling(false);
     }
   };
 
-  const title = product ? product.name : `Product #${id}`;
+  const title = notFound
+    ? t("notFoundTitle")
+    : product
+      ? product.name
+      : "Estudo API";
 
   return (
     <>
@@ -84,7 +107,11 @@ export default function ProductDetailPage() {
         <title>{title} | Estudo API</title>
         <meta
           name="description"
-          content={t("productDetailMetaDesc", { id: String(id) })}
+          content={
+            notFound
+              ? t("notFoundMetaDesc")
+              : t("productDetailMetaDesc", { id: String(id) })
+          }
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/api.png" />
@@ -99,22 +126,26 @@ export default function ProductDetailPage() {
             </Link>
             <div className={styles.headerActions}>
               <LangSelector />
-              <button
-                className={styles.deleteBtn}
-                onClick={handleDelete}
-                disabled={deleting || loading || notFound}
-                title={t("removeProductTitle")}
-              >
-                {deleting ? t("deleting") : t("removeBtn")}
-              </button>
-              <button
-                className={styles.refreshBtn}
-                onClick={() => fetchProduct(true)}
-                disabled={refreshing || loading}
-                title={t("refreshTitle")}
-              >
-                ↻
-              </button>
+              {!notFound && (
+                <>
+                  <button
+                    className={styles.deleteBtn}
+                    onClick={handleDelete}
+                    disabled={deleting || loading}
+                    title={t("removeProductTitle")}
+                  >
+                    {deleting ? t("deleting") : t("removeBtn")}
+                  </button>
+                  <button
+                    className={styles.refreshBtn}
+                    onClick={() => fetchProduct(true)}
+                    disabled={refreshing || loading}
+                    title={t("refreshTitle")}
+                  >
+                    ↻
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
@@ -123,10 +154,8 @@ export default function ProductDetailPage() {
           ) : notFound ? (
             <div className={styles.notFound}>
               <span className={styles.notFoundCode}>404</span>
-              <p>{t("productNotFound", { id: String(id) })}</p>
-              <Link href="/products" className={styles.backLink}>
-                {t("backToProducts")}
-              </Link>
+              <h1 className={styles.notFoundTitle}>{t("notFoundHeading")}</h1>
+              <p>{t("notFoundMessage")}</p>
             </div>
           ) : product ? (
             <>

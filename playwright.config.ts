@@ -13,6 +13,9 @@ export default defineConfig({
     /* Certificado auto-assinado do --experimental-https */
     ignoreHTTPSErrors: true,
     trace: "on-first-retry",
+    extraHTTPHeaders: {
+      "X-API-Key": process.env.API_KEY ?? "dev-api-key",
+    },
   },
   projects: [
     {

@@ -84,6 +84,13 @@ export const translations = {
     maintenanceMessage:
       "This page is temporarily unavailable. We'll be back soon.",
     maintenanceBackHome: "← Back to home",
+    // not found page
+    notFoundTitle: "Page Not Found",
+    notFoundMetaDesc: "The requested page could not be found",
+    notFoundHeading: "Page Not Found",
+    notFoundMessage:
+      "The page you are looking for does not exist or has been moved.",
+    notFoundBackHome: "← Back to home",
   },
   pt: {
     // meta
@@ -169,6 +176,12 @@ export const translations = {
     maintenanceMessage:
       "Esta página está temporariamente indisponível. Voltamos em breve.",
     maintenanceBackHome: "← Voltar ao início",
+    // not found page
+    notFoundTitle: "Página Não Encontrada",
+    notFoundMetaDesc: "A página solicitada não foi encontrada",
+    notFoundHeading: "Página Não Encontrada",
+    notFoundMessage: "A página que procura não existe ou foi movida.",
+    notFoundBackHome: "← Voltar ao início",
   },
 } as const;
 
