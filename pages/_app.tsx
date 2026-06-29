@@ -1,7 +1,8 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { Geist, Geist_Mono } from "next/font/google";
-import { LangProvider } from "../lib/LangContext";
+import { LangProvider, AlertProvider } from "../lib/context";
+import { AlertContainer } from "@/components/alerts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,9 +17,12 @@ const geistMono = Geist_Mono({
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <LangProvider>
-      <div className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Component {...pageProps} />
-      </div>
+      <AlertProvider>
+        <div className={`${geistSans.variable} ${geistMono.variable}`}>
+          <Component {...pageProps} />
+          <AlertContainer />
+        </div>
+      </AlertProvider>
     </LangProvider>
   );
 }

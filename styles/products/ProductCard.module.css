@@ -1,0 +1,73 @@
+.cardHeaderRight {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.deleteBtn {
+    font-size: 14px;
+    line-height: 1;
+    padding: 3px 6px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #8b949e;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+
+.deleteBtn:hover:not(:disabled) {
+    background: rgba(248, 81, 73, 0.15);
+    border-color: rgba(248, 81, 73, 0.4);
+    color: #f85149;
+}
+
+.deleteBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.detailLink {
+    font-size: 12px;
+    color: #58a6ff;
+    text-decoration: none;
+    padding-top: 8px;
+    border-top: 1px solid #30363d;
+    transition: color 0.15s;
+    align-self: flex-start;
+}
+
+.detailLink:hover {
+    color: #e6edf3;
+}
+
+.cardMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 8px;
+    border-top: 1px solid #30363d;
+}
+
+.metaRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.metaLabel {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #8b949e;
+}
+
+.metaValue {
+    font-family: var(--font-geist-mono);
+    font-size: 13px;
+    color: #e6edf3;
+}

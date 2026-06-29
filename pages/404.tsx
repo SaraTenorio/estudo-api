@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useLang, LangSelector } from "../lib/LangContext";
+import { useLang, LangSelector } from "../lib/context";
 import styles from "@/styles/Maintenance.module.css";
 
 export default function Custom404Page() {

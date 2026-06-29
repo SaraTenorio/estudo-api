@@ -1,0 +1,299 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.backLink {
+    font-size: 14px;
+    color: #58a6ff;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.backLink:hover {
+    color: #e6edf3;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.deleteBtn {
+    font-family: var(--font-geist-mono);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(248, 81, 73, 0.4);
+    background: rgba(248, 81, 73, 0.1);
+    color: #f85149;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.deleteBtn:hover:not(:disabled) {
+    background: rgba(248, 81, 73, 0.2);
+    border-color: #f85149;
+}
+
+.deleteBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.refreshBtn {
+    font-size: 18px;
+    line-height: 1;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #30363d;
+    background: #21262d;
+    color: #8b949e;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.3s;
+}
+
+.refreshBtn:hover:not(:disabled) {
+    background: #30363d;
+    border-color: #58a6ff;
+    color: #58a6ff;
+}
+
+.refreshBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.refreshBtn:active:not(:disabled) {
+    transform: rotate(180deg);
+}
+
+.titleRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.title {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #e6edf3;
+    margin: 0;
+    flex: 1;
+}
+
+.description {
+    font-size: 14px;
+    color: #8b949e;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.card {
+    width: 100%;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    background: #1c2128;
+    overflow: hidden;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px 20px;
+}
+
+.sectionTitle {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #58a6ff;
+    margin-bottom: 2px;
+}
+
+.divider {
+    height: 1px;
+    background: #30363d;
+}
+
+.row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #8b949e;
+    white-space: nowrap;
+}
+
+.value {
+    font-family: var(--font-geist-mono);
+    font-size: 13px;
+    color: #e6edf3;
+    text-align: right;
+}
+
+.price {
+    color: #3fb950;
+    font-weight: 600;
+}
+
+.mono {
+    font-size: 12px;
+    color: #8b949e;
+}
+
+.toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+.toggleTrack {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    border-radius: 10px;
+    background: #30363d;
+    border: 1px solid #484f58;
+    transition: background 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+}
+
+.toggle input:checked~.toggleTrack {
+    background: rgba(35, 134, 54, 0.5);
+    border-color: #3fb950;
+}
+
+.toggle input:disabled~.toggleTrack {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.toggleThumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #8b949e;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.toggle input:checked~.toggleTrack .toggleThumb {
+    transform: translateX(16px);
+    background: #3fb950;
+}
+
+.toggleLabel {
+    font-family: var(--font-geist-mono);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 46px;
+}
+
+.toggleLabelOn {
+    color: #3fb950;
+}
+
+.toggleLabelOff {
+    color: #8b949e;
+}
+
+.jsonBlock {
+    width: 100%;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    background: #0d1117;
+    overflow: hidden;
+}
+
+.jsonLabel {
+    display: block;
+    font-family: var(--font-geist-mono);
+    font-size: 12px;
+    color: #8b949e;
+    padding: 10px 16px;
+    border-bottom: 1px solid #30363d;
+    background: #161b22;
+}
+
+.pre {
+    margin: 0;
+    padding: 16px;
+    font-family: var(--font-geist-mono);
+    font-size: 13px;
+    color: #e6edf3;
+    line-height: 1.6;
+    overflow-x: auto;
+}
+
+.empty {
+    color: #8b949e;
+    font-size: 15px;
+}
+
+.notFound {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    flex: 1;
+    gap: 14px;
+    padding: 32px 0;
+}
+
+.notFoundCode {
+    font-family: var(--font-geist-mono);
+    font-size: 56px;
+    font-weight: 700;
+    color: #58a6ff;
+    text-shadow: 0 0 16px rgba(88, 166, 255, 0.25);
+    line-height: 1;
+}
+
+.notFoundTitle {
+    margin: 0;
+    font-size: 24px;
+    letter-spacing: -0.5px;
+    font-weight: 700;
+    color: #e6edf3;
+}
+
+.notFoundMessage {
+    font-size: 15px;
+    color: #8b949e;
+    margin: 0;
+    max-width: 420px;
+    line-height: 1.7;
+}

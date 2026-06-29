@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import styles from "@/styles/Home.module.css";
-import { useLang, LangSelector } from "../lib/LangContext";
+import { useLang, LangSelector } from "../lib/context";
 import type { TranslationKey } from "../lib/i18n";
 
 const methodColor: Record<string, string> = {

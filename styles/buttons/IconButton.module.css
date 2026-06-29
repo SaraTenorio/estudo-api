@@ -1,0 +1,75 @@
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+  border-radius: 6px;
+}
+
+.iconButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.iconButton:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+/* Sizes */
+.iconButton-sm {
+  padding: 2px 4px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.iconButton-md {
+  padding: 4px 8px;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.iconButton-lg {
+  padding: 6px 12px;
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Variants */
+.iconButton-secondary {
+  border-color: transparent;
+  color: var(--text-secondary);
+}
+
+.iconButton-secondary:hover:not(:disabled) {
+  color: #58a6ff;
+  border-color: rgba(88, 166, 255, 0.35);
+  background: rgba(88, 166, 255, 0.1);
+}
+
+.iconButton-primary {
+  background: #238636;
+  border-color: #238636;
+  color: #fff;
+}
+
+.iconButton-primary:hover:not(:disabled) {
+  background: #2ea043;
+  border-color: #2ea043;
+}
+
+.iconButton-danger {
+  background: transparent;
+  border-color: rgba(248, 81, 73, 0.35);
+  color: #f85149;
+}
+
+.iconButton-danger:hover:not(:disabled) {
+  background: rgba(248, 81, 73, 0.1);
+  border-color: rgba(248, 81, 73, 0.5);
+}

@@ -13,13 +13,16 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
     "test:e2e:summary": "node scripts/generate-e2e-summary.mjs",
-    "test:e2e:publish": "node scripts/publish-e2e-report-blob.mjs"
+    "test:e2e:publish": "node scripts/publish-e2e-report-blob.mjs",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "jsonwebtoken": "^9.0.3",
     "next": "16.2.6",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "storybook": "^10.4.6"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
@@ -27,6 +30,17 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@storybook/nextjs-vite": "^10.4.6",
+    "@chromatic-com/storybook": "^5.2.1",
+    "@storybook/addon-vitest": "^10.4.6",
+    "@storybook/addon-a11y": "^10.4.6",
+    "@storybook/addon-docs": "^10.4.6",
+    "@storybook/addon-onboarding": "^10.4.6",
+    "vite": "^8.1.0",
+    "vitest": "^4.1.9",
+    "playwright": "^1.61.1",
+    "@vitest/browser-playwright": "^4.1.9",
+    "@vitest/coverage-v8": "^4.1.9"
   }
 }

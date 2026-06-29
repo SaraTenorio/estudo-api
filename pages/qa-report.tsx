@@ -1,7 +1,7 @@
 import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { useLang, LangSelector } from "../lib/LangContext";
+import { useLang, LangSelector } from "../lib/context";
 import styles from "@/styles/QaReport.module.css";
 
 type QaSummary = {
