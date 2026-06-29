@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import type { ReactElement } from "react";
 import { LangProvider } from "@/lib/context";
-import { storySurface } from "../products/fixtures";
+import { storySurface } from "./Products/fixtures";
 
 const methodColor: Record<string, string> = {
   GET: "#61affe",
